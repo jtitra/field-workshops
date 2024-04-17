@@ -1,30 +1,13 @@
 // Define the resources to create
-// Provisions Azure Resource Group along with: 
-//    VPC, Service Account, IAM Member, GKE Cluster
-
-// Create VPC
-module "vpc" {
-  source       = "terraform-google-modules/network/google"
-  version      = "~> 9.0"
-  project_id   = var.gcp_project_id
-  network_name = "vpc-boutique"
-  subnets = [
-    {
-      subnet_name           = "app"
-      subnet_ip             = "10.1.0.0/24"
-      subnet_region         = "us-central1"
-      subnet_private_access = "false"
-      subnet_flow_logs      = "true"
-    },
-  ]
-}
+// Provisions the following into a GCP Project: 
+//    Service Account, IAM Member, GKE Cluster
 
 // Generate Random ID for GKE Cluster
 resource "random_string" "env" {
   length  = 4
   special = false
   upper   = false
-  numeric  = false
+  numeric = false
 }
 
 // Create Service Account
