@@ -24,12 +24,12 @@ resource "random_string" "env" {
   length  = 4
   special = false
   upper   = false
-  number  = false
+  numeric  = false
 }
 
 // Create Service Account
 resource "google_service_account" "harness" {
-  account_id   = "harness-${random_string.env}"
+  account_id   = "harness-${random_string.env.result}"
   display_name = "harness"
 }
 
@@ -43,7 +43,7 @@ resource "google_project_iam_member" "harness" {
 // Create GKE Cluster
 resource "google_container_cluster" "boutique" {
   project            = var.gcp_project_id
-  name               = "boutique-cluster-${random_string.env}"
+  name               = "boutique-cluster-${random_string.env.result}"
   location           = "us-central1-a"
   initial_node_count = 1
 
