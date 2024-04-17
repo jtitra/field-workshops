@@ -74,3 +74,15 @@ resource "google_container_cluster" "boutique" {
     update = "40m"
   }
 }
+
+# Local-exec to provision boutique app
+resource "null_resource" "boutique_app" {
+  depends_on = [google_container_cluster.boutique]
+
+  provisioner "local-exec" {
+    command = "${path.module}/../../boutique-app/boutique-deploy.sh"
+    environment = {
+      GKE_CLUSTER_NAME = "${google_container_cluster.boutique.name}"
+    }
+  }
+}
