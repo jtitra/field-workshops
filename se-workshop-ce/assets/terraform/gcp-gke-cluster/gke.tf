@@ -74,3 +74,12 @@ resource "google_container_cluster" "boutique" {
     update = "40m"
   }
 }
+
+# Local-exec provisioner to check cluster readiness
+resource "null_resource" "cluster_ready" {
+  depends_on = [google_container_cluster.boutique]
+
+  provisioner "local-exec" {
+    command = "until kubectl --context=${google_container_cluster.boutique.name} get nodes | grep Ready; do echo waiting for cluster to be ready; sleep 10; done"
+  }
+}
