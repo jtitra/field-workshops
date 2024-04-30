@@ -12,7 +12,7 @@ function is_valid_aws_account_id() { # Function to check if the input is a valid
     [[ "$account_id" =~ ^[0-9]{12}$ ]]
 }
 
-function verify_aws_account_created() {
+function verify_aws_account_created() { # Function to verify that an AWS account has been provisioned
     local max_retries=10
     local retry_interval=10
     local retry_count=0
@@ -36,6 +36,38 @@ function verify_aws_account_created() {
         fi
     done
     echo "Proceeding with operations on AWS Account ID: $aws_account_id"
+}
+
+#### GCP ####
+function is_valid_gcp_project_id() { # Function to check if the input is a valid GCP project ID
+    local project_id=$1
+    [[ "$project_id" =~ ^[a-z][-a-z0-9]{4,28}[a-z0-9]$ ]]
+}
+
+function verify_gcp_project_created() { # Function to verify that a GCP project has been provisioned
+    local max_retries=10
+    local retry_interval=10
+    local retry_count=0
+
+    echo "Verifying GCP Project has been created..."
+    while true; do
+        local gcp_project_id=$INSTRUQT_GCP_PROJECT_HARNESS_PROJECT_ID
+        echo "    DEBUG: GCP Project ID: $gcp_project_id"
+        if is_valid_gcp_project_id "$gcp_project_id"; then
+            echo "Valid GCP Project ID found: $gcp_project_id"
+            break
+        else
+            echo "Waiting for a valid GCP Project ID..."
+            local retry_count=$((retry_count + 1))
+
+            if [ "$retry_count" -ge "$max_retries" ]; then
+                echo "Maximum retries reached without obtaining a valid GCP Project ID."
+                exit 1
+            fi
+            sleep "$retry_interval"
+        fi
+    done
+    echo "Proceeding with operations on GCP Project ID: $gcp_project_id"
 }
 
 #### KEYCLOAK ####
