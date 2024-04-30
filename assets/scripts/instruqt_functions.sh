@@ -1,13 +1,9 @@
 # File: instruqt_functions.sh
 # Author: Joe Titra
-# Version: 0.1.5
+# Version: 0.1.6
 # Description: Common Functions used across the Instruqt SE Workshops
 
 ####################### BEGIN FUNCTION DEFINITION #######################
-greet() { # Test function to print a greeting
-  echo "Hello, $1!"
-}
-
 #### AWS ####
 function is_valid_aws_account_id() { # Function to check if the input is a valid AWS account ID
     local account_id=$1
@@ -285,13 +281,11 @@ function delete_harness_project() { # Function to delete project in Harness
 
 function get_harness_user_id() { # Function to lookup workshop user id in Harness
     local account_id="$1"
-    local org_id="$2"
-    local project_id="$3"
-    local api_key="$4"
-    local search_term="$5"
+    local api_key="$2"
+    local search_term="$3"
 
     echo "Getting Harness User ID..."
-    local response=$(curl -s \
+    local response=$(curl --silent --request POST \
         --location "https://app.harness.io/gateway/ng/api/user/aggregate?accountIdentifier=${account_id}&searchTerm=${search_term}" \
         --header "Content-Type: application/json" \
         --header "x-api-key: ${api_key}")
@@ -308,7 +302,7 @@ function delete_harness_user() { # Function to delete workshop user from Harness
     local user_email="$5"
 
      # Get the workshop user ID from Harness
-    get_harness_user_id $account_id $org_id $project_id $api_key $user_email
+    get_harness_user_id $account_id $api_key $user_email
     if [ "$HARNESS_USER_ID" == "null" ]; then
         echo "Failed to determine the User ID."
     else
