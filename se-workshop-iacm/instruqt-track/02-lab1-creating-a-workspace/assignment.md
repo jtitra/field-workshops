@@ -56,22 +56,14 @@ Click **Save**
 
 ### Configure Workspace
 Click on the **Variables** tab <br>
-Add two ```Environment Variables``` <br>
 
-| Key           | Value     |
-|---------------|-----------|
-| **AWS_ACCESS_KEY_ID**     | [[ Instruqt-Var key="AWS_ACCESS_KEY_ID" hostname="sandbox" ]]     |
-| **AWS_SECRET_ACCESS_KEY** | [[ Instruqt-Var key="AWS_SECRET_ACCESS_KEY" hostname="sandbox" ]] |
-
-*You could also use the preconfigured **secret**: ```aws-secret``` or create your own instead of storing the sensitive **AWS_SECRET_ACCESS_KEY** in plain-text*
-
-Add three Terraform Variables <br>
-
-| Key           | Value     |
-|---------------|-----------|
-| **instance_type** | `t2.micro` |
-| **extra**         | `test`     |
-| **bucket_name**   | `bucket1`  |
+> Add three ```Terraform Variables``` <br>
+>
+> | Key           | Value     |
+> |---------------|-----------|
+> | **instance_type** | `t2.micro` |
+> | **extra**         | `test`     |
+> | **bucket_name**   | `bucket1`  |
 
 
 *You could also reference a variable file from another location or another repository entirely. By default, it looks for the ```variables.tf``` that is defined in Workspaces > Repo > File Path.*

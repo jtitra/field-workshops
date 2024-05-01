@@ -30,15 +30,22 @@ do
     sleep 1
 done
 
+# Get assets for workshop
+mkdir -p /opt/harness/{scripts,misc}
+curl --silent --request GET \
+    --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/scripts/instruqt_functions.sh" \
+    --output /opt/harness/scripts/instruqt_functions.sh
+chmod +x /opt/harness/scripts/instruqt_functions.sh
+
+# Source Instruqt Functions
+source /opt/harness/scripts/instruqt_functions.sh
+
 # Wait for the Kubernetes API server to become available
 while ! curl --silent --fail --output /dev/null http://localhost:8001/api 
 do
     echo "Waiting for the Kubernetes API server to become available..."
     sleep 2 
 done
-
-# Source Instruqt Functions
-source /opt/harness/scripts/instruqt_functions.sh
 
 # Enable bash completion for kubectl
 echo "source /usr/share/bash-completion/bash_completion" >> /root/.bashrc
@@ -47,16 +54,6 @@ echo "complete -F __start_kubectl k" >> /root/.bashrc
 # Create required variables spec in TF
 echo "export TF_VAR_instruqt_aws_access_key_id=\$AWS_ACCESS_KEY_ID" >> /root/.bashrc
 echo "export TF_VAR_instruqt_aws_secret_access_key=\$AWS_SECRET_ACCESS_KEY" >> /root/.bashrc
-
-# Get assets for workshop
-mkdir -p /opt/harness/{scripts,misc}
-curl --silent --request GET \
-    --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/scripts/instruqt_functions.sh" \
-    --output /opt/harness/scripts/instruqt_functions.sh
-chmod +x /opt/harness/scripts/instruqt_functions.sh
-curl --silent --request GET \
-    --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/aws_credentials.html" \
-    --output /opt/harness/misc/aws_credentials.html
 
 # Install AWS CLI
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"

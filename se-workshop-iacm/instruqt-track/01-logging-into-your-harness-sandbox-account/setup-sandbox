@@ -10,6 +10,11 @@ USER_PWD="${SE_WORKSHOP_USER_PWD}"
 AWS_ACCESS_KEY=$AWS_ACCESS_KEY_ID
 AWS_SECRET_KEY=$AWS_SECRET_ACCESS_KEY
 
+# Get assets for workshop
+curl --silent --request GET \
+    --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/aws_credentials.html" \
+    --output /opt/harness/misc/aws_credentials.html
+
 # Update Lab Credentials HTML file
 sed -i "s/EXAMPLEHARNESSUSERNAME/${USER_EMAIL}/g; s/EXAMPLEHARNESSPASSWORD/${USER_PWD}/g" /opt/harness/misc/aws_credentials.html
 sed -i "s#EXAMPLEAWSACCESSKEYID#${AWS_ACCESS_KEY_ID}#g; s#EXAMPLEAWSSECRETACCESSKEY#${AWS_SECRET_ACCESS_KEY}#g" /opt/harness/misc/aws_credentials.html

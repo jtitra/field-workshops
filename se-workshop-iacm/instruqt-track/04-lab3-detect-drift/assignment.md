@@ -33,7 +33,7 @@ h2.cyan { color: cyan; }
 
 ## Now it's time to introduce some drift
 
-### Switch to the ```>_Shell``` tab to continue
+> ### Switch to the ```>_Shell``` tab to continue
 
 ### List out our instances
 ```
@@ -75,15 +75,17 @@ And then click ```+Create Pipeline``` <br>
 > - Store: ```Inline``` <br>
 
 Click ```+Add Stage``` <br>
-Choose **Infrastructure** stage type <br>
-Give it a name: ```IaCM``` <br><br>
+> Choose **Infrastructure** stage type <br>
+> Give it a name: ```IaCM``` <br><br>
 
-Keep the defaults on the **Infrastructure** tab and click **Next >** <br>
-On the **Workspace** tab set the type to ```Runtime input``` and click **Next >** <br>
-Select **Detect Drift** operation and click **Use Operation** <br>
+> Keep the defaults on the **Infrastructure** tab and click **Next >** <br>
+
+> On the **Workspace** tab set the type to ```Runtime input``` and click **Next >** <br>
+
+> Select **Detect Drift** operation and click **Use Operation** <br>
 
 Your pipeline should look like this: <br>
-![IaCM_Drift.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/IaCM_Drift.png)
+![IaCM_Drift.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/IaCM_Drift.png)<br>
 Click **Save** in the top right to save your new pipeline <br>
 
 ### Execute your new IaCM Pipeline

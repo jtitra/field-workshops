@@ -17,11 +17,11 @@ developers:
 - joseph.titra@harness.io
 show_timer: true
 idle_timeout: 900
-timelimit: 1800
+timelimit: 3600
 lab_config:
   overlay: false
   width: 33
   position: right
   feedback_recap_enabled: true
   loadingMessages: true
-checksum: "4209840563465024120"
+checksum: "3384108007997479261"
