@@ -220,9 +220,9 @@ function create_harness_project() { # Function to create project in Harness
             }
         }')
 
-    local create_status=$(echo $response | jq -r ".status")
+    local response_status=$(echo $response | jq -r ".status")
 
-    if [ "$create_status" == "SUCCESS" ]; then
+    if [ "$response_status" == "SUCCESS" ]; then
         echo "Project '$project_name' created successfully."
     else
         echo "Failed to create project '$project_name'. Response: $response"
@@ -356,6 +356,40 @@ function delete_harness_user() { # Function to delete workshop user from Harness
             fi
         fi
     fi    
+}
+
+function verify_harness_login() { # Function to create project in Harness
+    local account_id="$1"
+    local api_key="$2"
+    local user_name="$3"
+    local time_filter=$(expr $(date +%s%N | cut -b1-13) - 300000)
+
+    echo "Validating Harness login for user '$user_name'..."
+    local response=$(curl --silent --request POST \
+        --location "https://app.harness.io/gateway/audit/api/audits/list?accountIdentifier=${account_id}" \
+        --header "Content-Type: application/json" \
+        --header "x-api-key: ${api_key}" \
+        --data-raw '{
+            "actions": [
+                "LOGIN"
+            ],
+            "principals": [{
+                "type": "USER",
+                "identifier": "'$user_name'"
+            }],
+            "filterType": "Audit",
+            "startTime": "'$time_filter'"
+        }')
+
+    local response_items=$(echo $response | jq -r ".data.totalItems")
+
+    if [ $response_items -ge 1 ]; then
+        echo "Successful login found in audit trail."
+    else
+        echo "No Logins were found in the last 5 minutes"
+        fail-message "No Login events were found for your user via the Harness API."
+        #exit 1
+    fi
 }
 
 #### MISC ####
