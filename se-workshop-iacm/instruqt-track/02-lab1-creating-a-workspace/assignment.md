@@ -12,6 +12,10 @@ tabs:
 - title: Harness Platform
   type: browser
   hostname: harness
+- title: Code Editor
+  type: service
+  hostname: sandbox
+  port: 8443
 - title: Lab Credentials
   type: service
   hostname: sandbox
@@ -57,13 +61,12 @@ Click **Save**
 ### Configure Workspace
 Click on the **Variables** tab <br>
 
-> Add three ```Terraform Variables``` <br>
+> Add two ```Terraform Variables``` <br>
 >
 > | Key           | Value     |
 > |---------------|-----------|
 > | **instance_type** | `t2.micro` |
 > | **extra**         | `test`     |
-> | **bucket_name**   | `bucket1`  |
 
 
 *You could also reference a variable file from another location or another repository entirely. By default, it looks for the ```variables.tf``` that is defined in Workspaces > Repo > File Path.*

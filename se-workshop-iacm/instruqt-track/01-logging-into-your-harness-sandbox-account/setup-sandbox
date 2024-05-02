@@ -36,10 +36,9 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
-useradd -m harness
 systemctl daemon-reload        # Reload systemd to read new service
-systemctl start lab_credentials    # Start the service
 systemctl enable lab_credentials   # Enable service to start on boot
+systemctl start lab_credentials    # Start the service
 
 # Create secret to use with connector
 echo "Creating Project Secret for AWS_SECRET_ACCESS_KEY..."
