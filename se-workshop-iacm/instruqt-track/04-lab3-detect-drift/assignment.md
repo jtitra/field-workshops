@@ -64,7 +64,8 @@ aws ec2 modify-instance-attribute \
 ### Run the ```describe-instances``` command again to confirm the change
 
 ## Now let's create an IaCM Pipeline to detect drift
-### Switch back to the ```Harness Platform``` to continue
+> ### Switch back to the ```Harness Platform``` to continue
+
 Click on Pipelines in your left Nav <br>
 And then click ```+Create Pipeline``` <br>
 ![Create_Pipeline.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/Create_Pipeline.png)

@@ -30,6 +30,39 @@ h2.cyan { color: cyan; }
 
 ## TBD
 
+update instance_type variable to t3.micro
+
+go to pipelines
+run provision pipeline
+
+review
+
+planned changes
+
+click on instance
+scroll down to see change
+
+approve
+
+cost change estimation tab
+expand resource type to see detail
+
+
+back to workspaces
+click state tab
+
+select first state
+click compare with dropdown and choose prior version
+
+
+![iacm_instance_type_update.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_instance_type_update.png)
+![iacm_planned_changes.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_planned_changes.png)
+![iacm_cost_change_estimation.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_cost_change_estimation.png)
+![iacm_state_tab.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_state_tab.png)
+![iacm_state_compare_with.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_state_compare_with.png)
+![iacm_state_compare.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_state_compare.png)
+
+
 ===============
 
 Click the **Check** button to continue.
