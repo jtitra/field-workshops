@@ -427,6 +427,6 @@ function setup_vs_code() { # Function to setup VS Code
     systemctl daemon-reload        # Reload systemd to read new service
     systemctl enable code-server   # Enable service to start on boot
     systemctl start code-server    # Start the service
-    code-server --install-extension hashicorp.terraform
+    #code-server --install-extension hashicorp.terraform
 }
 ######################## END FUNCTION DEFINITION ########################
