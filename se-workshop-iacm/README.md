@@ -20,6 +20,9 @@ This lab focuses on detecting configuration drifts in your infrastructure. Parti
 ### Lab 4: Governance with OPA
 Explore how to integrate Open Policy Agent (OPA) with Harness IaCM to enforce governance policies. This lab will demonstrate setting up policy-as-code frameworks to ensure compliance across your infrastructure deployments.
 
+### Lab 5: Cost Estimation and State Changes
+In this lab you will learn how to utilize Harness IaCM to estimate costs and track state changes in your infrastructure, enabling more informed decision-making.
+
 ## Additional Resources
 This workshop leverages the Terraform code found here:
 - [iacm-workshop](https://github.com/jtitra/iacm-workshop)
