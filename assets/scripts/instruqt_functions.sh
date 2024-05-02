@@ -358,4 +358,40 @@ function delete_harness_user() { # Function to delete workshop user from Harness
     fi    
 }
 
+#### MISC ####
+function setup_vs_code() { # Function to setup VS Code
+    local service_port="$1"
+    local code_server_directory="$2"
+
+    function run_install() { # Function to handle positional parameters
+        . /tmp/install.sh
+    }
+    # Download VSC
+    if [ -x "$(which code-server)" ]; then
+        echo "VS Code already installed."
+    else
+        echo "Installing VS Code..."
+        curl --silent --request GET \
+            --location "https://raw.githubusercontent.com/cdr/code-server/main/install.sh" \
+            --output /tmp/install.sh
+        chmod +x /tmp/install.sh
+        run_install
+    fi
+
+    # Setup VSC
+    sleep 2
+    mkdir -p /root/.local/share/code-server/User/
+    curl --silent --request GET \
+        --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/vs_code/settings.json" \
+        --output /root/.local/share/code-server/User/settings.json
+    curl --silent --request GET \
+        --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/vs_code/code-server.service" \
+        --output /etc/systemd/system/code-server.service
+
+    # Update VSC Service
+    sed -i "s#EXAMPLEPORT#${service_port}#g; s#EXAMPLEDIRECTORY#${code_server_directory}#g" /etc/systemd/system/code-server.service
+    systemctl daemon-reload        # Reload systemd to read new service
+    systemctl enable code-server   # Enable service to start on boot
+    systemctl start code-server    # Start the service
+}
 ######################## END FUNCTION DEFINITION ########################
