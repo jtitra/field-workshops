@@ -417,7 +417,7 @@ function setup_vs_code() { # Function to setup VS Code
     mkdir -p /root/.local/share/code-server/User/
     curl --silent --request GET \
         --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/vs_code/settings.json" \
-        --output /root/.local/share/code-server/User/settings.json
+        --output /home/harness/.local/share/code-server/User/settings.json
     curl --silent --request GET \
         --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/vs_code/code-server.service" \
         --output /etc/systemd/system/code-server.service

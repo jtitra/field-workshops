@@ -3,5 +3,5 @@
         "*.hcl": "terraform"
     },
     "window.autoDetectColorScheme": true,
-    "workbench.colorTheme": "Default Dark+"
+    "workbench.colorTheme": "Default Dark Modern"
 }
