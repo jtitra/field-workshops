@@ -415,6 +415,7 @@ function setup_vs_code() { # Function to setup VS Code
     # Setup VSC
     sleep 2
     mkdir -p /home/harness/.local/share/code-server/User/
+    chown -R harness:harness /home/harness/.local/share
     curl --silent --request GET \
         --location "https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/vs_code/settings.json" \
         --output /home/harness/.local/share/code-server/User/settings.json
@@ -427,6 +428,7 @@ function setup_vs_code() { # Function to setup VS Code
     systemctl daemon-reload        # Reload systemd to read new service
     systemctl enable code-server   # Enable service to start on boot
     systemctl start code-server    # Start the service
+    # Add the VS Code extension for HCL files
     code-server --install-extension hashicorp.terraform
 }
 ######################## END FUNCTION DEFINITION ########################
