@@ -83,9 +83,10 @@ Be sure to click the toggle under **ENFORCED** to enable your **Policy Set**
 Head back over to your workspace. <br>
 > Click on **Variables** and then on **Terraform Variables** <br>
 
-Click the pencil icon next to ```instance_type``` and try to change the value to ```t2.large``` and then click the green check mark to save it. <br><br>
-That is Policy as Code in action! Isn't it beautiful? <br>
-Harness has wrapped the entire platform with OPA so this is just the tip of the iceberg.<br>
+Click the pencil icon next to ```instance_type``` and try to change the value to ```t2.large``` and then click the green check mark to save it.
+<br><br>
+That is `Policy as Code` in action! Isn't it beautiful? <br>
+Harness has wrapped the *entire platform* with `OPA` so this is just the tip of the iceberg! <br>
 
 ===============
 

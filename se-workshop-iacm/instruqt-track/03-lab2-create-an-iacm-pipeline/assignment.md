@@ -40,29 +40,52 @@ And then click ```+Create Pipeline``` <br>
 > - Name: ```IaCM Provision``` <br>
 > - Store: ```Inline``` <br>
 
+<br><br>
 Click ```+Add Stage``` <br>
 > Choose **Infrastructure** stage type <br>
-> Give it a name: ```IaCM``` <br><br>
+![iacm_pipeline_stage.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_pipeline_stage.png)<br>
+Give it a name: ```IaCM```
 
-Keep the defaults on the **Infrastructure** tab and click **Next >** <br><br>
+<br><br>
+> ![pipeline_infrastructure_tab.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/pipeline_infrastructure_tab.png)<br>
+Keep the defaults on the  **Infrastructure** tab and click **Next >**
 
-On the **Workspace** tab set the type to ```Runtime input``` and click **Next >** <br><br>
+<br><br>
+> ![pipeline_workspace_tab.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/pipeline_workspace_tab.png)<br>
+On the **Workspace** tab set the type to ```Runtime input``` and click **Next >** <br>
+![pipeline_workspace_runtime_input.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/pipeline_workspace_runtime_input.png)
 
-Select **Provision** operation and click **Use Operation** <br><br>
+<br><br>
+Select **Provision** operation and click **Use Operation** <br>
+![iacm_provision_step.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_provision_step.png)
 
+<br><br>
 In the pipeline click ```+``` between plan and apply and **Add Step** <br>
-![Add_Step.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/Add_Step.png)<br>
+![Add_Step.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/Add_Step.png)
+
+<br><br>
 Select **IACM Approval** <br>
+![iacm_approval_step.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_approval_step.png)
+
+<br><br>
 
 Your pipeline should look like this: <br>
 ![IaCM_Provision.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/IaCM_Provision.png)<br>
-Click **Save** in the top right to save your new pipeline <br>
 
 ### Execute your new IaCM Pipeline
-Now click **Run** and select your **Workspace** to execute the pipeline <br>
+> Click **Save** in the top right to save your new pipeline. <br>
+![pipeline_save.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/pipeline_save.png) <br>
 
-Wait for your pipeline to reach the **Approval** step so and review the planned changes. <br>
+> Now click **Run** and select your **Workspace** to execute the pipeline. <br>
+![pipeline_run.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/pipeline_run.png)
+
+<br>
+
+Wait for your pipeline to reach the **Approval** step and click **Review** to see the `Planned Changes`. <br>
+![iacm_pipeline_review.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_pipeline_review.png) <br>
+
 > Click **Approve** and the pipeline will proceed with the **apply** step. <br>
+![iacm_approve.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-iacm/assets/images/iacm_approve.png) <br>
 
 ===============
 

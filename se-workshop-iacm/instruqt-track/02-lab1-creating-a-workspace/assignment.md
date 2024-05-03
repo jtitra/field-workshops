@@ -32,11 +32,12 @@ h2.cyan { color: cyan; }
 <hr class="cyan">
 <br>
 
-> ### Switch to the ```Code Editor``` tab to continue
+> # Switch to the ```Code Editor``` tab to continue
 From here we can take a look at our Terraform code to get a better understanding of what we will provision through an IaCM pipeline in the next lab.
 
+<br><br>
 
-> ### Switch to the ```Harness Platform``` tab to continue
+> # Switch to the ```Harness Platform``` tab to continue
 
 First let's select the project that's been created for this workshop <br>
 ![project_selection.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/project_selection.png)
