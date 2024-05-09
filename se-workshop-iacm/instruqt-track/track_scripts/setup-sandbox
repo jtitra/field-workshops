@@ -1,19 +1,22 @@
 #!/bin/bash
 
+######################## ADD ANY WORKSHOP SPECIFIC SETUP AT THE VERY BOTTOM ########################
+WORKSHOP_TYPE="iacm"
+################################## START OF DO NOT MODIFY SECTION ##################################
 # REQUIRED VARIABLES LIST
 HARNESS_ACCOUNT_ID="${SE_WORKSHOP_ACCOUNT_ID}"
 HARNESS_ORG_ID="${SE_WORKSHOP_ORG_ID}"
 HARNESS_PAT="${SE_WORKSHOP_PAT}"
 HARNESS_USER_GROUP="${SE_WORKSHOP_USER_GRP_ID}"
 RANDOM_SUFFIX=$(echo $RANDOM | md5sum | head -c 10; echo;)
-HARNESS_PROJECT="iacm$RANDOM_SUFFIX"
+HARNESS_PROJECT="$WORKSHOP_TYPE$RANDOM_SUFFIX"
 USER_PWD="${SE_WORKSHOP_USER_PWD}"
 SKIP_KEYCLOAK=false
 
 if [ "$SKIP_KEYCLOAK" = true ]; then
     USER_EMAIL="jtitra@gmail.com"
 else
-    USER_NAME="iacm$RANDOM_SUFFIX"
+    USER_NAME="$WORKSHOP_TYPE$RANDOM_SUFFIX"
     USER_EMAIL="$USER_NAME@harness.io"
     KEYCLOAK_ENDPOINT="${SE_WORKSHOP_KEYCLOAK_ENDPOINT}"
     KEYCLOAK_REALM="${SE_WORKSHOP_KEYCLOAK_REALM}"
@@ -72,8 +75,9 @@ agent variable set HARNESS_PWD $USER_PWD
 agent variable set HARNESS_PRJ_ID $HARNESS_PROJECT
 agent variable set HARNESS_PRJ_CREATED $HARNESS_PROJECT_CREATED
 agent variable set KEYCLOAK_CONFIG $SKIP_KEYCLOAK
+################################## END OF DO NOT MODIFY SECTION ##################################
 
-######################## ADD ANY WORKSHOP SPECIFIC SETUP BELOW ########################
+############################# ADD ANY WORKSHOP SPECIFIC SETUP BELOW ##############################
 # Install AWS CLI
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip > /dev/null
