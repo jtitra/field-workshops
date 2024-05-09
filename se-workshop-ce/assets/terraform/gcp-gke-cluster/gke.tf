@@ -1,6 +1,6 @@
 // Define the resources to create
 // Provisions the following into a GCP Project: 
-//    Service Account, IAM Member, GKE Cluster
+//    GKE Cluster
 
 // Generate Random ID for GKE Cluster
 resource "random_string" "env" {
@@ -8,19 +8,6 @@ resource "random_string" "env" {
   special = false
   upper   = false
   numeric = false
-}
-
-// Create Service Account
-resource "google_service_account" "harness" {
-  account_id   = "harness-${random_string.env.result}"
-  display_name = "harness"
-}
-
-// Configure IAM Member
-resource "google_project_iam_member" "harness" {
-  project = var.gcp_project_id
-  role    = "roles/viewer"
-  member  = "serviceAccount:${google_service_account.harness.email}"
 }
 
 // Create GKE Cluster
@@ -54,7 +41,7 @@ resource "google_container_cluster" "boutique" {
   }
 
   node_config {
-    service_account = google_service_account.harness.email
+    service_account = var.gke_cluster_user
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/logging.write",
@@ -72,17 +59,5 @@ resource "google_container_cluster" "boutique" {
   timeouts {
     create = "30m"
     update = "40m"
-  }
-}
-
-# Local-exec to provision boutique app
-resource "null_resource" "boutique_app" {
-  depends_on = [google_container_cluster.boutique]
-
-  provisioner "local-exec" {
-    command = "${path.module}/../../boutique-app/boutique-deploy.sh"
-    environment = {
-      GKE_CLUSTER_NAME = "${google_container_cluster.boutique.name}"
-    }
   }
 }
