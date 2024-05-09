@@ -16,12 +16,12 @@ owner: harness
 developers:
 - joseph.titra@harness.io
 show_timer: true
-idle_timeout: 900
-timelimit: 3600
+idle_timeout: 1800
+timelimit: 5400
 lab_config:
   overlay: false
   width: 25
   position: right
   feedback_recap_enabled: true
   loadingMessages: true
-checksum: "18077616241205808603"
+checksum: "15888106176329554458"

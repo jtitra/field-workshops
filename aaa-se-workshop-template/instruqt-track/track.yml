@@ -1,0 +1,23 @@
+slug: se-workshop-template #change me to the module or name e.g., se-workshop-iacm
+title: Harness TEMPLATE Workshop #update the title e.g., Harness IaCM Workshop
+description: |2- #update the Lab section
+
+  ![harness_black-logo.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/harness_black-logo.png)
+
+  **This track demonstrates how to:**
+    - Lab 1 - Your Labs Go Here
+icon: https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/modules/iacm.png #change this to the desired icon
+tags: []
+owner: harness
+developers:
+- joseph.titra@harness.io
+- your.name@harness.io #add your info here
+show_timer: true
+idle_timeout: 1800
+timelimit: 5400
+lab_config:
+  overlay: false
+  width: 25
+  position: right
+  feedback_recap_enabled: true
+  loadingMessages: true
