@@ -25,33 +25,31 @@
 ```
 
 ## Instruqt 101
-Every track has a few key components:
-> **config.yml**
-> - For a basic workshop will not require any modification.
+Every track has a few key components: <br>
+- **config.yml**
+  - For a basic workshop this will not require any modification.
+- **track.yml**
+  - This only requires a few updates and controls how your track is rendered in Instruqt.
+  - ![Instruqt Track](https://raw.githubusercontent.com/jtitra/field-workshops/main/aaa-se-workshop-template/assets/images/EXAMPLE.png)
+- **track_scripts**
+  - `setup-sandbox`
+    - This script contains the standard setup required for every Instruqt track.
+    - 🟥 Do NOT modify any of it.
+      - This script creates a user in Keycloak and then creates a project for that user in Harness
+    - If you need to add any configuration specific to your workshop add it after line `#80`
+  - `cleanup-sandbox`
+    - This script cleans up everything that was provisioned as part of the Instruqt track.
+    - 🟥 Do NOT modify any of it.
+    - If you need to clean up any configuration specific to your workshop add it after line `#44`
 
-> **track.yml**
-> - This only requires a few updates and controls how your track is rendered in Instruqt.<br>
-![Instruqt Track](https://raw.githubusercontent.com/jtitra/field-workshops/main/aaa-se-workshop-template/assets/images/EXAMPLE.png)
-
-> **track_scripts**
-> - `setup-sandbox`
->   - This script contains the standard setup required for every Instruqt track.
->   - Do <span style="color: red;">NOT</span> modify any of it.
->     - This script creates a user in Keycloak and then creates a project for that user in Harness
->   - If you need to add any configuration specific to your workshop add it after line `#80`
-> - `cleanup-sandbox`
->   - This script cleans up everything that was provisioned as part of the Instruqt track.
->   - Do <span style="color: red;">NOT</span> modify any of it.
->   - If you need to clean up any configuration specific to your workshop add it after line `#44`
-
-> **instruqt-track**
-> - Every lab will have it's own folder which will contain four files.
->   - `assignment.md` This is the lab guide the attendees will follow
->   - `setup-sandbox` This contains any additional setup required for this individual lab
->   - `check-sandbox` This contains any programmatic validation you wish to occur when the user clicks the ***Check*** button
->   - `solve-sandbox` This contains any automation to perform the steps for the user. Only necessary if you allow the user to ***Skip***
-> - Name the folder using the same value as the ***slug*** from `assignment.md` prefixed with its numerical position in the workshop sequence.
-> - Focus on the `assignment.md` file first and do not worry about any validation until after your content and flow is finalized.
+**instruqt-track**
+- Every lab will have it's own folder which will contain four files.
+  - `assignment.md` This is the lab guide the attendees will follow
+  - `setup-sandbox` This contains any additional setup required for this individual lab
+  - `check-sandbox` This contains any programmatic validation you wish to occur when the user clicks the ***Check*** button
+  - `solve-sandbox` This contains any automation to perform the steps for the user. Only necessary if you allow the user to ***Skip***
+- Name the folder using the same value as the ***slug*** from `assignment.md` prefixed with its numerical position in the workshop sequence.
+- Focus on the `assignment.md` file first and do not worry about any validation until after your content and flow is finalized.
 
 For more information on Instruqt and its capabilities, please visit the following resources:
 - [Instruqt Docs](https://docs.instruqt.com/)
@@ -60,18 +58,17 @@ For more information on Instruqt and its capabilities, please visit the followin
 
 
 ## Harness Tracks
-> **assets**
-> - This is where any track specific assets go. Refer to the IaCM workshop as an example.
-
-> **instruqt-track**
-> - `01-logging-into-your-harness-sandbox-account`
->   - Every workshop should start with this track. You should not need to change anything about it.
->   - The workshop provisions a user in Keycloak and then leverages JIT to create the user in Harness the first time they login.
->   - The `check-sandbox` script will verify that the user has actually logged in prior to allowing them to continue.
-> - `02-lab1-your-lab-name-here`
->   - Rename this folder to match the name of your first lab.
->   - Now that the user exists in Harness, the `setup-sandbox` script will assign admin permissions to the Harness project we've created for the user.
->   - Do <span style="color: red;">NOT</span> modify this script.
+- **assets**
+   - This is where any track specific assets go. Refer to the IaCM workshop as an example.
+- **instruqt-track**
+  - `01-logging-into-your-harness-sandbox-account`
+    - Every workshop should start with this track. You should not need to change anything about it.
+    - The workshop provisions a user in Keycloak and then leverages JIT to create the user in Harness the first time they login.
+    - The `check-sandbox` script will verify that the user has actually logged in prior to allowing them to continue.
+  - `02-lab1-your-lab-name-here`
+    - Rename this folder to match the name of your first lab.
+    - Now that the user exists in Harness, the `setup-sandbox` script will assign admin permissions to the Harness project we've created for the user.
+    - 🟥 Do NOT modify this script.
 
 
 # Use the structure below when creating the track readme.
