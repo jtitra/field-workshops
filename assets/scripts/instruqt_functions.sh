@@ -8,7 +8,7 @@
 #   v0.1.5     | Joe Titra    | 05/29/2024 | Minor updates to standardize curl command across functions
 #   v0.1.6     | Joe Titra    | 05/30/2024 | Added GCP functions
 #   v0.1.7     | Joe Titra    | 06/02/2024 | Added setup_vs_code and verify_harness_login functions
-#   v0.1.8     | Joe Titra    | 06/02/2024 | Added create_harness_delegate function
+#   v0.1.8     | Joe Titra    | 06/10/2024 | Added create_harness_delegate function
 
 ####################### BEGIN FUNCTION DEFINITION #######################
 #### AWS ####
