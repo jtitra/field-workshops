@@ -1,6 +1,6 @@
 # File: instruqt_functions.sh
 # Author: Joe Titra
-# Version: 0.1.8
+# Version: 0.2.0
 # Description: Common Functions used across the Instruqt SE Workshops
 # History:
 #   Version    |    Author    |    Date    |  Comments
@@ -8,7 +8,8 @@
 #   v0.1.5     | Joe Titra    | 05/29/2024 | Minor updates to standardize curl command across functions
 #   v0.1.6     | Joe Titra    | 05/30/2024 | Added GCP functions
 #   v0.1.7     | Joe Titra    | 06/02/2024 | Added setup_vs_code and verify_harness_login functions
-#   v0.1.8     | Joe Titra    | 06/10/2024 | Added create_harness_delegate function
+#   v0.1.8     | Joe Titra    | 06/09/2024 | Added create_harness_delegate function
+#   v0.2.0     | Joe Titra    | 06/10/2024 | Standardized Harness functions to always have api_key first
 
 ####################### BEGIN FUNCTION DEFINITION #######################
 #### AWS ####
@@ -204,10 +205,10 @@ function delete_keycloak_user() { # Function to delete workshop user from Keyclo
 
 #### HARNESS ####
 function create_harness_project() { # Function to create project in Harness
-    local account_id="$1"
-    local org_id="$2"
-    local project_name="$3"
-    local api_key="$4"
+    local api_key="$1"
+    local account_id="$2"
+    local org_id="$3"
+    local project_name="$4"
 
     echo "Creating Harness project '$project_name'..."
     local response=$(curl --silent --request POST \
@@ -238,10 +239,10 @@ function create_harness_project() { # Function to create project in Harness
 }
 
 function invite_user_to_harness_project() { # Function to invite our new user to our new project
-    local account_id="$1"
-    local org_id="$2"
-    local project_id="$3"
-    local api_key="$4"
+    local api_key="$1"
+    local account_id="$2"
+    local org_id="$3"
+    local project_id="$4"
     local user_email="$5"
     #echo "Inviting the user to the project..."
     curl --silent --request POST \
@@ -262,23 +263,23 @@ function invite_user_to_harness_project() { # Function to invite our new user to
 }
 
 function invite_user_to_harness_project_loop() { # Function to handle inconsistent API calls
-    local account_id="$1"
-    local org_id="$2"
-    local project_name="$3"
-    local api_key="$4"
+    local api_key="$1"
+    local account_id="$2"
+    local org_id="$3"
+    local project_id="$4"
     local user_email="$5"
     local invite_attempts=0
     local max_attempts=4
     local invite_status=""
 
     echo "Inviting the user to the project..."
-    local invite_response=$(invite_user_to_harness_project $account_id $org_id $project_name $api_key $user_email)
+    local invite_response=$(invite_user_to_harness_project $api_key $account_id $org_id $project_id $user_email)
     local invite_status=$(echo $invite_response | jq -r ".status")
     echo "  DEBUG: Status: $invite_status"
 
     while [[ "$invite_status" != "SUCCESS" && $invite_attempts -lt $max_attempts ]]; do
         echo "User invite to project has failed. Retrying... Attempt: $((invite_attempts + 1))"
-        local invite_response=$(invite_user_to_harness_project $account_id $org_id $project_name $api_key $user_email)
+        local invite_response=$(invite_user_to_harness_project $api_key $account_id $org_id $project_id $user_email)
         local invite_status=$(echo $invite_response | jq -r ".status")
         echo "  DEBUG: Status: $invite_status"
         local invite_attempts=$((invite_attempts + 1))
@@ -294,22 +295,22 @@ function invite_user_to_harness_project_loop() { # Function to handle inconsiste
 }
 
 function delete_harness_project() { # Function to delete project in Harness
-    local account_id="$1"
-    local org_id="$2"
-    local project_name="$3"
-    local api_key="$4"
+    local api_key="$1"
+    local account_id="$2"
+    local org_id="$3"
+    local project_id="$4"
 
-    echo "Deleting Harness project '$project_name'..."
+    echo "Deleting Harness project '$project_id'..."
     local response=$(curl --silent --request DELETE \
-        --location "https://app.harness.io/gateway/ng/api/projects/${project_name}?accountIdentifier=${account_id}&orgIdentifier=${org_id}" \
+        --location "https://app.harness.io/gateway/ng/api/projects/${project_id}?accountIdentifier=${account_id}&orgIdentifier=${org_id}" \
         --header "x-api-key: ${api_key}")
 
     local response_status=$(echo $response | jq -r ".status")
 
     if [ "$response_status" == "SUCCESS" ]; then
-        echo "Project '$project_name' deleted successfully."
+        echo "Project '$project_id' deleted successfully."
     else
-        echo "Failed to delete project '$project_name'. Response: $response"
+        echo "Failed to delete project '$project_id'. Response: $response"
         if [ "$CLEANUP" = true ]; then
             echo "Attempting to continue the cleanup process..."
         else
@@ -319,8 +320,8 @@ function delete_harness_project() { # Function to delete project in Harness
 }
 
 function get_harness_user_id() { # Function to lookup workshop user id in Harness
-    local account_id="$1"
-    local api_key="$2"
+    local api_key="$1"
+    local account_id="$2"
     local search_term="$3"
 
     echo "Getting Harness User ID..."
@@ -334,14 +335,12 @@ function get_harness_user_id() { # Function to lookup workshop user id in Harnes
 }
 
 function delete_harness_user() { # Function to delete workshop user from Harness
-    local account_id="$1"
-    local org_id="$2"
-    local project_id="$3"
-    local api_key="$4"
-    local user_email="$5"
+    local api_key="$1"
+    local account_id="$2"
+    local user_email="$3"
 
      # Get the workshop user ID from Harness
-    get_harness_user_id $account_id $api_key $user_email
+    get_harness_user_id $api_key $account_id $user_email
     if [ "$HARNESS_USER_ID" == "null" ]; then
         echo "Failed to determine the User ID."
     else
@@ -366,8 +365,8 @@ function delete_harness_user() { # Function to delete workshop user from Harness
 }
 
 function verify_harness_login() { # Function to create project in Harness
-    local account_id="$1"
-    local api_key="$2"
+    local api_key="$1"
+    local account_id="$2"
     local user_name="$3"
     local time_filter=$(expr $(date +%s%N | cut -b1-13) - 300000)
 
@@ -400,14 +399,14 @@ function verify_harness_login() { # Function to create project in Harness
 }
 
 function create_harness_delegate() { # Function to create project level delegate in Harness
-    local account_id="$1"
-    local org_id="$2"
-    local project_name="$3"
-    local api_key="$4"
+    local api_key="$1"
+    local account_id="$2"
+    local org_id="$3"
+    local project_id="$4"
 
-    echo "Creating delegate for Harness project '$project_name'..."
+    echo "Creating delegate for Harness project '$project_id'..."
     local response=$(curl --silent --request POST \
-        --location "https://app.harness.io/gateway/ng/api/download-delegates/kubernetes?accountIdentifier=${account_id}&orgIdentifier=${org_id}&projectIdentifier=${project_name}" \
+        --location "https://app.harness.io/gateway/ng/api/download-delegates/kubernetes?accountIdentifier=${account_id}&orgIdentifier=${org_id}&projectIdentifier=${project_id}" \
         --header "Content-Type: application/json" \
         --header "x-api-key: ${api_key}" \
         --write-out "%{http_code}" \
@@ -422,7 +421,7 @@ function create_harness_delegate() { # Function to create project level delegate
     if [ "$response" -ge 200 ] && [ "$response" -lt 300 ]; then
         # Using a YAML parser like yq to validate YAML content
         if yq eval instruqt-delegate.yaml &>/dev/null; then
-            echo "Valid YAML file received."
+            echo "Valid YAML file received. Applying it."
             kubectl apply -f instruqt-delegate.yaml
         else
             echo "The file is not a valid YAML."

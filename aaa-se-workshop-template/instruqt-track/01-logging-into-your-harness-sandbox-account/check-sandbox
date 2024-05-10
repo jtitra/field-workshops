@@ -10,4 +10,4 @@ USER_EMAIL=$(agent variable get HARNESS_USER)
 source /opt/harness/scripts/instruqt_functions.sh
 
 # Verify that the workshop user has logged into the Harness project
-verify_harness_login $HARNESS_ACCOUNT_ID $HARNESS_PAT $USER_EMAIL
+verify_harness_login $HARNESS_PAT $HARNESS_ACCOUNT_ID $USER_EMAIL

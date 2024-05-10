@@ -14,7 +14,7 @@ USER_EMAIL=$(agent variable get HARNESS_USER)
 source /opt/harness/scripts/instruqt_functions.sh
 
 # Add the workshop user to the Harness project as an admin
-invite_user_to_harness_project_loop $HARNESS_ACCOUNT_ID $HARNESS_ORG_ID $HARNESS_PROJECT $HARNESS_PAT $USER_EMAIL
+invite_user_to_harness_project_loop $HARNESS_PAT $HARNESS_ACCOUNT_ID $HARNESS_ORG_ID $HARNESS_PROJECT $USER_EMAIL
 
 ################################## END OF DO NOT MODIFY SECTION ##################################
 

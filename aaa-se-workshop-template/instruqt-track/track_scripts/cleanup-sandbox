@@ -33,9 +33,9 @@ fi
 if [ "$HARNESS_PROJECT_CREATED" = true ]; then
     echo "Cleaning up Project: ${HARNESS_PROJECT}"
     # Delete the Users Sandbox Project in Harness
-    delete_harness_project $HARNESS_ACCOUNT_ID $HARNESS_ORG_ID $HARNESS_PROJECT $HARNESS_PAT
+    delete_harness_project $HARNESS_PAT $HARNESS_ACCOUNT_ID $HARNESS_ORG_ID $HARNESS_PROJECT
     # Delete the workshop user from Harness Project
-    delete_harness_user $HARNESS_ACCOUNT_ID $HARNESS_ORG_ID $HARNESS_PROJECT $HARNESS_PAT $USER_EMAIL_CLEAN
+    delete_harness_user $HARNESS_PAT $HARNESS_ACCOUNT_ID $USER_EMAIL_CLEAN
 else
     echo "Harness Project does not appear to have been created. Skipping..."
 fi
