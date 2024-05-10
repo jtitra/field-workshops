@@ -1,7 +1,14 @@
 # File: instruqt_functions.sh
 # Author: Joe Titra
-# Version: 0.1.6
+# Version: 0.1.8
 # Description: Common Functions used across the Instruqt SE Workshops
+# History:
+#   Version    |    Author    |    Date    |  Comments
+#   v0.1.0     | Joe Titra    | 04/19/2024 | Intial version
+#   v0.1.5     | Joe Titra    | 05/29/2024 | Minor updates to standardize curl command across functions
+#   v0.1.6     | Joe Titra    | 05/30/2024 | Added GCP functions
+#   v0.1.7     | Joe Titra    | 06/02/2024 | Added setup_vs_code and verify_harness_login functions
+#   v0.1.8     | Joe Titra    | 06/02/2024 | Added create_harness_delegate function
 
 ####################### BEGIN FUNCTION DEFINITION #######################
 #### AWS ####
@@ -389,6 +396,39 @@ function verify_harness_login() { # Function to create project in Harness
         echo "No Logins were found in the last 5 minutes"
         fail-message "No Login events were found for your user via the Harness API."
         #exit 1
+    fi
+}
+
+function create_harness_delegate() { # Function to create project level delegate in Harness
+    local account_id="$1"
+    local org_id="$2"
+    local project_name="$3"
+    local api_key="$4"
+
+    echo "Creating delegate for Harness project '$project_name'..."
+    local response=$(curl --silent --request POST \
+        --location "https://app.harness.io/gateway/ng/api/download-delegates/kubernetes?accountIdentifier=${account_id}&orgIdentifier=${org_id}&projectIdentifier=${project_name}" \
+        --header "Content-Type: application/json" \
+        --header "x-api-key: ${api_key}" \
+        --write-out "%{http_code}" \
+        --output instruqt-delegate.yaml \
+        --data-raw '{
+            "name": "instruqt-workshop-delegate",
+            "description": "Automatically created for this lab",
+            "clusterPermissionType": "CLUSTER_ADMIN"
+        }')
+
+    # If the request was successful, check if the response is valid YAML
+    if [ "$response" -ge 200 ] && [ "$response" -lt 300 ]; then
+        # Using a YAML parser like yq to validate YAML content
+        if yq eval instruqt-delegate.yaml &>/dev/null; then
+            echo "Valid YAML file received."
+            kubectl apply -f instruqt-delegate.yaml
+        else
+            echo "The file is not a valid YAML."
+        fi
+    else
+        echo "Request failed. Status Code: $response"
     fi
 }
 
