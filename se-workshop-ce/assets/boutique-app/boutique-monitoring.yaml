@@ -1,7 +1,3 @@
-#expects namespaces:
-#  app & monitoring: boutique-app
-#  hce: hce
-
 ##Prometheus Configuration
 apiVersion: v1
 kind: ServiceAccount
@@ -9,12 +5,11 @@ metadata:
   name: prometheus
   labels:
     app: prometheus
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: prometheus-scrape
+  name: prometheus
   labels:
     app: prometheus
 rules:
@@ -33,60 +28,20 @@ rules:
   #     - /metrics
     verbs:
       - get
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: prometheus-scrape
+  name: prometheus
   labels:
     app: prometheus
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: prometheus-scrape
+  name: prometheus
 subjects:
   - kind: ServiceAccount
     name: prometheus
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: prometheus-scrape
-  labels:
-    app: prometheus
-rules:
-  - apiGroups: [""]
-    resources:
-      - nodes
-      - nodes/metrics
-      - services
-      - endpoints
-      - pods
-    verbs: ["get", "list", "watch"]
-  - apiGroups:
-      - extensions
-    resources:
-      - ingresses
-    verbs: ["get", "list", "watch"]
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: prometheus-scrape
-  labels:
-    app: prometheus
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: prometheus-scrape
-subjects:
-  - kind: ServiceAccount
-    name: prometheus
-    namespace: boutique-app
-
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -1895,33 +1850,24 @@ data:
   prometheus.yml: |
     global:
       scrape_interval: 5s
-
     rule_files:
       - "/etc/prometheus-rules/alert.rules"
-
     alerting:
       alertmanagers:
         - static_configs:
           - targets: ["alertmanager:9093"]
-
     scrape_configs:
       - job_name: 'chaos-exporter'
         static_configs:
           - targets: ['chaos-exporter:8080']
-        kubernetes_sd_configs:
-        - role: pod
-          namespaces:
-            names:
-            - hce
         relabel_configs:
           - target_label: instance
             replacement: 'chaos-exporter-service'
-      - job_name: 'boutique-app'
-        kubernetes_sd_configs:
-        - role: pod
-          namespaces:
-            names:
-            - boutique-app
+      - job_name: 'mysql_server1'
+        static_configs:
+          - targets: ['mysql-exporter.monitoring.svc.cluster.local:9104']
+            labels:
+              alias: db1
       - job_name: prometheus-blackbox-exporter-http
         scrape_interval: 1s
         metrics_path: /metrics
@@ -2123,7 +2069,7 @@ spec:
         - args:
             - --storage.tsdb.retention.time=360h
             - --config.file=/etc/prometheus/prometheus.yml
-          image: prom/prometheus:latest
+          image: prom/prometheus:v2.25.2
           imagePullPolicy: IfNotPresent
           name: prometheus
           ports:
@@ -2209,7 +2155,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: blackbox-exporter
-          image: prom/blackbox-exporter:latest
+          image: 'prom/blackbox-exporter:v0.15.1'
           imagePullPolicy: IfNotPresent
           securityContext:
             readOnlyRootFilesystem: true
@@ -2233,7 +2179,7 @@ spec:
             - mountPath: /config
               name: config
         - name: configmap-reload
-          image: jimmidyson/configmap-reload:latest
+          image: 'jimmidyson/configmap-reload:v0.2.2'
           imagePullPolicy: 'IfNotPresent'
           securityContext:
             runAsNonRoot: true
