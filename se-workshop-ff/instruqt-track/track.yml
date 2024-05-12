@@ -1,0 +1,28 @@
+slug: se-workshop-ff
+id: pvohnugavjq4
+title: Harness Feature Flags Workshop
+description: |2-
+
+  ![harness_black-logo.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/harness_black-logo.png)
+
+  **This track demonstrates how to:**
+    - Lab 1 - Introduction & Problem Statement
+    - Lab 2 - Controlled Releases
+    - Lab 3 - Targeted Releases
+    - Lab 4 - Governance & Efficiency
+icon: https://raw.githubusercontent.com/jtitra/field-workshops/assets/modules/ff.png
+tags: []
+owner: harness
+developers:
+- joseph.titra@harness.io
+- nicolas.acton@harness.io
+show_timer: true
+idle_timeout: 1800
+timelimit: 5400
+lab_config:
+  overlay: false
+  width: 25
+  position: right
+  feedback_recap_enabled: true
+  loadingMessages: true
+checksum: "166224375483705927"
