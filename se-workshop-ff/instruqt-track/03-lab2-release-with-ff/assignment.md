@@ -3,11 +3,11 @@ slug: lab2-release-with-ff
 id: 0aofyshclucr
 type: challenge
 title: Lab 2 - Feature Releases with Feature Flags
-teaser: Brief summary goes here
+teaser: Lets see how we release with Feature Flags!
 notes:
 - type: text
   contents: |
-    Put your lab description here
+    Now that we see how we can introduce breaking changes just by pushing deployments, lets see what the experience is like with Feature Flags.
 tabs:
 - title: Harness Platform
   type: browser
@@ -36,12 +36,9 @@ Now, we will conduct the same actions but instead we will wrap this new caching 
 
 ># Navigate to the `Harness` Tab to Continue
 1. From the left hand menu, go to **Projects &rarr; All Projects**
-2. Click on **+New Project** and enter the following values.
+2. Select the pre-made project
 
-| Input    | Value | Notes |
-| -------- | ------- | ----- |
-| Name  | **<company_name>-<username>**  | |
-| Organization  |   | |
+![Pre-made FF Project](../assets/images/new_ff_project.png)
 
 3. Click **Save and Continue >** and **Save and Continue** again on the next screen
 4. *This brings up the **Get Started** flow. For the purposes of this workshop we will skip that and create our Feature Flags from scratch. Click the 'X' in the upper right corner to close the pop-up.*
@@ -49,7 +46,7 @@ Now, we will conduct the same actions but instead we will wrap this new caching 
 6. Search for your project (`<company_name>-<username>`) and select it.
 7. Click into the Feature flags module on the left hand pane.
 8. Expand **Project Setup** in the secondary navigation panel and select **Environments**
-9. Click **+New Environment** button.
+9.  Click **+New Environment** button.
 10. Name your environment **development** and keep the Environment Type as **Non-production**.
 11. Click **Create**
 12. Click **+New SDK Key** on the SDK Keys pop-up screen.
@@ -65,14 +62,14 @@ Now, we will conduct the same actions but instead we will wrap this new caching 
 >docker build -t weather-api .
 >docker run -p 5000:5000 -e FF_KEY=<your_ff_key> weather-api
 >```
-19. Open the **Sample App** tab and see the outputs for various cities.
+1.  Open the **Sample App** tab and see the outputs for various cities.
   - Does it run fast or slow?
-20. Enable the feature in the Harness UI by navigating to **Feature Flags** in the secondary navigation pane and toggling the Feature Flag.
-21. Open the **Sample App** tab and see the outputs for various ciites.
+2.  Enable the feature in the Harness UI by navigating to **Feature Flags** in the secondary navigation pane and toggling the Feature Flag.
+3.  Open the **Sample App** tab and see the outputs for various ciites.
   - Does it run fast or slow?
   - Do you still see the issue?
-22. Rollback the issue using the same Feature Flag toggle in the Harness UI
-23. Verify that the correct behavior has been restored
+4.  Rollback the issue using the same Feature Flag toggle in the Harness UI
+5.  Verify that the correct behavior has been restored
 
 ===============
 

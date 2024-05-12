@@ -4,7 +4,7 @@ virtualbrowsers:
   url: https://tinyurl.com/harness-seworkshop
 virtualmachines:
 - name: sandbox
-  image: instruqt/docker-2010
+  image: instruqt/k3s-v1-29-0
   shell: /bin/bash
   machine_type: n2-standard-2
   allow_external_ingress:

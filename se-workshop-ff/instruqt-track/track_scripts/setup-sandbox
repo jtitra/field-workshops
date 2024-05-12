@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ######################## ADD ANY WORKSHOP SPECIFIC SETUP AT THE VERY BOTTOM ########################
-WORKSHOP_TYPE="demo"
+WORKSHOP_TYPE="ff"
 ################################## START OF DO NOT MODIFY SECTION ##################################
 # REQUIRED VARIABLES LIST
 HARNESS_ACCOUNT_ID="${SE_WORKSHOP_ACCOUNT_ID}"
@@ -87,5 +87,22 @@ cp -r feature_flags_workshop/ /opt/workshop/
 chown -R harness:harness /opt/workshop/
 rm -rf feature_flags_workshop/
 
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker harness
+
 # Install VS Code
 setup_vs_code 8443 "/opt/workshop/feature_flags_workshop/"
+
+# Setup VS Code Settings
+cat > /home/harness/.local/share/code-server/User/settings.json <<EOF
+{
+    "files.associations": {
+        "*.hcl": "terraform"
+    },
+    "window.autoDetectColorScheme": true,
+    "workbench.colorTheme": "Default Dark Modern",
+    "terminal.integrated.defaultProfile.linux": "bash"
+}
+EOF

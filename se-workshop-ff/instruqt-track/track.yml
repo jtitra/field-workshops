@@ -11,7 +11,10 @@ description: |2-
     - Lab 3 - Targeted Releases
     - Lab 4 - Governance & Efficiency
 icon: https://raw.githubusercontent.com/jtitra/field-workshops/assets/modules/ff.png
-tags: []
+tags:
+- python
+- vscode
+- ff
 owner: harness
 developers:
 - joseph.titra@harness.io
@@ -25,4 +28,4 @@ lab_config:
   position: right
   feedback_recap_enabled: true
   loadingMessages: true
-checksum: "166224375483705927"
+checksum: "3097318319232832653"

@@ -34,8 +34,15 @@ h2.cyan { color: cyan; }
 > # Switch to the ```Code Editor``` tab to continue
 From here we can look at the application we will be "releasing."
 
+**Terminal**
+
+To open a terminal, you can either use a keyboard combination like CMD+SHIFT+P or CTRL+SHIFT+P and find the **Terminal: Create New Terminal** option.
+
+Alternatively, you can open a terminal using the File menu in the Code Editor:
+![New Terminal](../assets/images/new-terminal.png)
+
 ## The Application
-Familiarize yourself with the application. In this case, it's a simple Python application that models what we might see from a backend microservice. In this case, this microservice is a "weather API" that returns the current temperature from a city you provide as a query.
+Familiarize yourself with the application. In this case, it's a simple Python application that models what we might see from a backend microservice. This microservice is a "weather API" that returns the current temperature from a city you provide as a query, first in Celsius then in Fahrenheit measurements.
 
 ## Build and Deploy
 Run the following command to build your application
@@ -75,7 +82,7 @@ The performance on each run is significantly faster, but do you see any issues?
 
 ...
 
-That's right, caching seems to just be producing the same output over and over again regardless of what city you select. You've introduced a breaking change into the `weather-api` service!
+That's right, caching seems to just be producing the same output for both Fahrenheit and Celsius regardless of what city is tested. You've introduced a breaking change into the `weather-api` service!
 
 Feel free to stop the docker container in your terminal with CTRL-C.
 
