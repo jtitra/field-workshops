@@ -3,14 +3,14 @@ id: pvohnugavjq4
 title: Harness Feature Flags Workshop
 description: |2-
 
-  ![harness_black-logo.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/images/harness_black-logo.png)
+  ![FF-Logo](https://developer.harness.io/img/icon_ff.svg)
 
-  **This track demonstrates how to:**
+  **This track demonstrates how to control releases with Harness Feature Flags:**
     - Lab 1 - Introduction & Problem Statement
     - Lab 2 - Controlled Releases
     - Lab 3 - Targeted Releases
     - Lab 4 - Governance & Efficiency
-icon: https://raw.githubusercontent.com/jtitra/field-workshops/assets/modules/ff.png
+icon: https://developer.harness.io/img/icon_ff.svg
 tags:
 - python
 - vscode
@@ -28,4 +28,4 @@ lab_config:
   position: right
   feedback_recap_enabled: true
   loadingMessages: true
-checksum: "3097318319232832653"
+checksum: "8894110184277030773"
