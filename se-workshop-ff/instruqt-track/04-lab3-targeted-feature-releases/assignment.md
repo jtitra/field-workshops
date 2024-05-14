@@ -32,7 +32,7 @@ h2.cyan { color: cyan; }
 <br>
 
 > # Introduce a Change
-It's great that we have our feature behind a feature flag now to determine whether the feature is rolled out, but some users need this feature faster than others are are motivated to try it even if it's in more of a Beta stage. Lets see how we can get this feature to just those users.
+It's great that we have our feature behind a feature flag now to determine whether the feature is rolled out, but some users need this feature faster than others are motivated to try it even if it's in more of a Beta stage. Lets see how we can get this feature to just those users.
 
 > # Navigate to the `Code Editor` Tab to Continue
 1. Run the following commands to build a new Docker image and starte the container, ensuring you replace the `<your_ff_key>` with the SDK key you previously copied in the prior lab and make sure you use the **cachingv3** branch.
@@ -81,7 +81,7 @@ It's great that we have our feature behind a feature flag now to determine wheth
 
 ># Front-end Feature Flags
 1. Navigate to **Environments**
-2. Under your development environment, create a new **Client** SDK key
+2. Under your development environment, create a new **Client** SDK key called `frontend`
 3. In the UI for your application, click on the **Key** button and add your SDK Key. You might need to refresh the `Sample App` page to be sure this fully takes effect.
 4. In the Feature Flags UI, create a new boolean flag with the identifier of `dark_mode` and set it to evaluate to **True** when it is toggled on.
 5. Enable your new flag and observe the results in your application UI.

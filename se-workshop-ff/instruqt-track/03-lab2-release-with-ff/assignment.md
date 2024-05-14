@@ -40,22 +40,19 @@ Now, we will conduct the same actions but instead we will wrap this new caching 
 
 ![Pre-made FF Project](../assets/images/new_ff_project.png)
 
-3. Click **Save and Continue >** and **Save and Continue** again on the next screen
+3. Click on the **Feature Flags > Feature Flags** option in the left navigation bar.
 4. *This brings up the **Get Started** flow. For the purposes of this workshop we will skip that and create our Feature Flags from scratch. Click the 'X' in the upper right corner to close the pop-up.*
-5. From the left hand menu, go to **Projects**, and click the Project selector in the secondary menu.
-6. Search for your project (`<company_name>-<username>`) and select it.
-7. Click into the Feature flags module on the left hand pane.
-8. Expand **Project Setup** in the secondary navigation panel and select **Environments**
-9.  Click **+New Environment** button.
-10. Name your environment **development** and keep the Environment Type as **Non-production**.
-11. Click **Create**
-12. Click **+New SDK Key** on the SDK Keys pop-up screen.
-13. Call your SDK key **development** and click **Create**
-14. Click Feature Flags at the top of the secondary navigation pane on the left and click the **+New Feature Flag**
-15. Select **Boolean** on the pop-up wizard
-16. In the "About the flag" screen enter the name **cache_result** and click **Next>**
-17. In the Variation setting screen, modify the value of the **If the flag is Enabled, serve** to **True** then click **Save and Close**
-18. Run the following two commands to build a new Docker image and start the container
+5. Expand the **Feature Flags** left navigation panel and select **Environments**
+6.  Click **+New Environment** button.
+7.  Name your environment **development** and keep the Environment Type as **Non-production**.
+8.  Click **Create**
+9.  Click **+New SDK Key** on the SDK Keys pop-up screen.
+10. Call your SDK key **development** and click **Create**
+11. Click Feature Flags at the top of the secondary navigation pane on the left and click the **+New Feature Flag**
+12. Select **Boolean** on the pop-up wizard
+13. In the "About the flag" screen enter the name **cache_result** and click **Next>**
+14. In the Variation setting screen, modify the value of the **If the flag is Enabled, serve** to **True** then click **Save and Close**
+15. Run the following two commands to build a new Docker image and start the container
 >**Important** Replace `<your_ff_key>` with the SDK key you copied in the prior step and make sure you're in the `cachingv2` branch.
 >```
 >git checkout cachingv2
