@@ -17,8 +17,8 @@ tags:
 - ff
 owner: harness
 developers:
-- joseph.titra@harness.io
 - nicolas.acton@harness.io
+- joseph.titra@harness.io
 show_timer: true
 idle_timeout: 1800
 timelimit: 5400
@@ -28,4 +28,4 @@ lab_config:
   position: right
   feedback_recap_enabled: true
   loadingMessages: true
-checksum: "8894110184277030773"
+checksum: "10953842365261262473"
