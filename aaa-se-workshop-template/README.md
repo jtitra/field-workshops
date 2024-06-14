@@ -51,6 +51,14 @@ Every track has a few key components: <br>
 - Name the folder using the same value as the ***slug*** from `assignment.md` prefixed with its numerical position in the workshop sequence.
 - Focus on the `assignment.md` file first and do not worry about any validation until after your content and flow is finalized.
 
+### Install Instruqt CLI
+- [Set up Instruqt](https://docs.instruqt.com/getting-started/set-up-instruqt#step-3-set-up-your-chosen-tool) <br>
+- [CLI Commands](https://docs.instruqt.com/reference/cli/commands#instruqt-track-push) <br>
+Once the CLI is installed run ```instruqt auth login``` to authenticate <br>
+Then `cd` to your `instruqt-track` folder and run ```instruqt track push``` to push your track to the Instruqt platform <br>
+
+
+
 For more information on Instruqt and its capabilities, please visit the following resources:
 - [Instruqt Docs](https://docs.instruqt.com/)
 - [Email Joe](mailto:jtitra@harness.io) or @Joe on Slack
