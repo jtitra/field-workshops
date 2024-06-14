@@ -1,6 +1,6 @@
 # File: instruqt_functions.sh
 # Author: Joe Titra
-# Version: 0.2.0
+# Version: 0.2.1
 # Description: Common Functions used across the Instruqt SE Workshops
 # History:
 #   Version    |    Author    |    Date    |  Comments
@@ -10,6 +10,7 @@
 #   v0.1.7     | Joe Titra    | 06/02/2024 | Added setup_vs_code and verify_harness_login functions
 #   v0.1.8     | Joe Titra    | 06/09/2024 | Added create_harness_delegate function
 #   v0.2.0     | Joe Titra    | 06/10/2024 | Standardized Harness functions to always have api_key first
+#   v0.2.1     | Joe Titra    | 06/14/2024 | Added add_k8s_service_to_hosts and updated create_harness_delegate
 
 ####################### BEGIN FUNCTION DEFINITION #######################
 #### AWS ####
@@ -420,14 +421,20 @@ function create_harness_delegate() { # Function to create project level delegate
     # If the request was successful, check if the response is valid YAML
     if [ "$response" -ge 200 ] && [ "$response" -lt 300 ]; then
         # Using a YAML parser like yq to validate YAML content
-        if yq eval instruqt-delegate.yaml &>/dev/null; then
-            echo "Valid YAML file received. Applying it."
-            kubectl apply -f instruqt-delegate.yaml
+        if ! command -v yq &> /dev/null; then
+            echo "  INFO: Skipping yaml validation as yq is not installed."
         else
-            echo "The file is not a valid YAML."
+            echo "  INFO: Validating YAML file with yq."
+            if yq eval instruqt-delegate.yaml &>/dev/null; then
+                echo "  INFO: Valid YAML file received. Applying it."
+                kubectl apply -f instruqt-delegate.yaml
+            else
+                echo "  ERROR: The file is not a valid YAML."
+            fi
         fi
+
     else
-        echo "Request failed. Status Code: $response"
+        echo "  ERROR: Request failed. Status Code: $response"
     fi
 }
 
@@ -469,5 +476,48 @@ function setup_vs_code() { # Function to setup VS Code
     systemctl start code-server    # Start the service
     # Add the VS Code extension for HCL files
     code-server --install-extension hashicorp.terraform
+}
+
+function add_k8s_service_to_hosts() { # Function to add a Kubernetes service IP to the /etc/hosts file
+    local service_name="$1"
+    local namespace="$2"
+    local hostname="$3"
+    local retries=0
+    local max_retries=5
+    local retry_delay=10  # seconds
+
+    echo "Adding '$service_name' to the hosts file."
+    # Loop to get the IP address with retries
+    while :; do
+        # Get the IP address of the service
+        local ip_address=$(kubectl get service "$service_name" -n "$namespace" -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+        # Check if the IP address was retrieved
+        if [[ -n "$ip_address" && "$ip_address" != "<none>" && "$ip_address" != "None" ]]; then
+            echo "Successfully retrieved IP address: $ip_address"
+            break
+        fi
+
+        # Increment retries and check if maximum retries reached
+        ((retries++))
+        if ((retries == max_retries)); then
+            echo "Failed to retrieve IP for service $service_name in namespace $namespace after $max_retries attempts."
+            return 1
+        fi
+
+        # Wait before retrying
+        echo "Retrying in $retry_delay seconds... ($retries/$max_retries)"
+        sleep $retry_delay
+    done
+
+    # Check if the entry already exists and remove it
+    if grep -q "$hostname" /etc/hosts; then
+        sed -i "/$hostname/d" /etc/hosts
+    fi
+
+    # Add the new hosts entry
+    echo "$ip_address $hostname" | tee -a /etc/hosts > /dev/null
+
+    echo "Added $hostname with IP $ip_address to /etc/hosts"
 }
 ######################## END FUNCTION DEFINITION ########################
