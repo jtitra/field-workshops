@@ -10,14 +10,15 @@ description: |2-
     - Lab 2 - Create a Harness IaCM Pipeline
     - Lab 3 - Drift Detection w/Harness IaCM
     - Lab 4 - Governance w/OPA
+    - Lab 5 - Cost Estimation and State
 icon: https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/modules/iacm.png
 tags: []
 owner: harness
 developers:
 - joseph.titra@harness.io
 show_timer: true
-idle_timeout: 1800
-timelimit: 5400
+idle_timeout: 3600
+timelimit: 10800
 lab_config:
   overlay: false
   width: 25
