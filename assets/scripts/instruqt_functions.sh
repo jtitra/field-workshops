@@ -1,16 +1,17 @@
 # File: instruqt_functions.sh
 # Author: Joe Titra
-# Version: 0.2.1
+# Version: 0.2.2
 # Description: Common Functions used across the Instruqt SE Workshops
 # History:
 #   Version    |    Author    |    Date    |  Comments
 #   v0.1.0     | Joe Titra    | 04/19/2024 | Intial version
-#   v0.1.5     | Joe Titra    | 05/29/2024 | Minor updates to standardize curl command across functions
-#   v0.1.6     | Joe Titra    | 05/30/2024 | Added GCP functions
-#   v0.1.7     | Joe Titra    | 06/02/2024 | Added setup_vs_code and verify_harness_login functions
-#   v0.1.8     | Joe Titra    | 06/09/2024 | Added create_harness_delegate function
-#   v0.2.0     | Joe Titra    | 06/10/2024 | Standardized Harness functions to always have api_key first
+#   v0.1.5     | Joe Titra    | 04/29/2024 | Minor updates to standardize curl command across functions
+#   v0.1.6     | Joe Titra    | 04/30/2024 | Added GCP functions
+#   v0.1.7     | Joe Titra    | 05/02/2024 | Added setup_vs_code and verify_harness_login functions
+#   v0.1.8     | Joe Titra    | 05/09/2024 | Added create_harness_delegate function
+#   v0.2.0     | Joe Titra    | 05/10/2024 | Standardized Harness functions to always have api_key first
 #   v0.2.1     | Joe Titra    | 06/14/2024 | Added add_k8s_service_to_hosts and updated create_harness_delegate
+#   v0.2.2     | Joe Titra    | 06/19/2024 | Added get_k8s_loadbalancer_ip and render_manifest_from_template
 
 ####################### BEGIN FUNCTION DEFINITION #######################
 #### AWS ####
@@ -520,4 +521,64 @@ function add_k8s_service_to_hosts() { # Function to add a Kubernetes service IP 
 
     echo "Added $hostname with IP $ip_address to /etc/hosts"
 }
+
+function get_k8s_loadbalancer_ip() { # Function to get the external IP of a K8s LoadBalancer service
+  local service_name=$1
+  local namespace=${2:-""} # Default to current namespace
+  local max_attempts=${3:-30} # Default to 30 attempts
+  local sleep_time=${4:-2} # Default to 2 seconds between attempts
+
+  echo "Waiting for LoadBalancer IP for service ${service_name}..."
+  for ((i=1; i<=max_attempts; i++)); do
+    if [[ -n "$namespace" ]]; then
+      local external_ip=$(kubectl get svc ${service_name} -n ${namespace} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    else
+      local external_ip=$(kubectl get svc ${service_name} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    fi
+
+    if [[ -n "$external_ip" ]]; then
+      echo "Service ${service_name} has an external IP: ${external_ip}"
+      EXTERNAL_IP=$external_ip
+      return 0
+    fi
+    echo "Attempt $i/$max_attempts: LoadBalancer IP not yet available, retrying in ${sleep_time}s..."
+    sleep $sleep_time
+  done
+
+  echo "Failed to get LoadBalancer IP for service ${service_name} after ${max_attempts} attempts."
+  exit 1
+}
+
+function render_manifest_from_template() { # Function to replace placeholders in the template
+    local template_file=$1
+    local output_path=$2
+    local apps_string=$3
+
+    function replace_values() {
+        local template_file=$1
+        local output_file=$2
+        local app_name=$3
+        local app_port=$4
+        local ip_address=$5
+
+        sed \
+            -e "s/{{ APP_NAME }}/${app_name}/g" \
+            -e "s/{{ APP_PORT }}/${app_port}/g" \
+            -e "s/{{ HOSTNAME }}/$HOST_NAME/g" \
+            -e "s/{{ PARTICIPANT_ID }}/$INSTRUQT_PARTICIPANT_ID/g" \
+            -e "s/{{ IP_ADDRESS }}/$ip_address/g" \
+            "${template_file}" > "${output_file}"
+    }
+    ORIGINAL_IFS=$IFS
+    IFS="," read -r -a apps <<< "$apps_string"
+    echo "$apps"
+    for app in "${apps[@]}"; do
+        echo "Rendering template for ${app}"
+        IFS=":" read -r app_name app_port ip_address <<< "$app"
+        local output_file="nginx-${app_name}.yaml"
+        replace_values "$template_file" "${output_path}/$output_file" "$app_name" "$app_port" "$ip_address"
+    done
+    IFS=$ORIGINAL_IFS
+}
+
 ######################## END FUNCTION DEFINITION ########################
