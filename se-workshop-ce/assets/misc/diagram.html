@@ -73,6 +73,10 @@
         color: #ffffff;
       }
 
+      .btn.hidden {
+        display: none;
+      }
+
       .responsive-image {
         width: 80%; /* or any other percentage */
         height: auto; /* maintain aspect ratio */
@@ -82,9 +86,9 @@
   <body>
     <div class="main">
       <div id="myBtnContainer">
-        <button class="btn active" onclick="filterSelection('delegate')"> Delegate Architecture </button>
-        <button class="btn" onclick="filterSelection('arch')"> HCE Architecture </button>
-        <button class="btn" onclick="filterSelection('flow')"> HCE Experiment Flow </button>
+        <button class="btn hidden" onclick="filterSelection('delegate')"> Delegate Architecture </button>
+        <button class="btn active" onclick="filterSelection('arch')"> HCE Architecture </button>
+        <button class="btn hidden" onclick="filterSelection('flow')"> HCE Experiment Flow </button>
         <button class="btn" onclick="filterSelection('microserv')"> Demo App Architecture </button>
         <button class="btn" onclick="filterSelection('delete')"> Pod Delete </button>
         <button class="btn" onclick="filterSelection('cpu')"> CPU Hog </button>
@@ -161,7 +165,7 @@
       </div>
     </div>
     <script>
-      filterSelection('delegate')
+      filterSelection('arch')
       function filterSelection(c) {
         var x, i;
         x = document.getElementsByClassName("column");

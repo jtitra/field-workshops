@@ -14,7 +14,47 @@ import subprocess
 import time
 import requests
 from jinja2 import Template
+import json
 ####################### BEGIN FUNCTION DEFINITION #######################
+
+def verify_harness_login(api_key, account_id, user_name):
+    """
+    Verifies the login of a user in Harness by checking the audit logs.
+
+    :param api_key: The API key for accessing Harness API.
+    :param account_id: The account ID in Harness.
+    :param user_name: The user name to verify the login for.
+    """
+    time_filter = int(time.time() * 1000) - 300000  # Current time in milliseconds minus 5 minutes
+
+    print(f"Validating Harness login for user '{user_name}'...")
+    url = f"https://app.harness.io/gateway/audit/api/audits/list?accountIdentifier={account_id}"
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api_key
+    }
+    payload = {
+        "actions": ["LOGIN"],
+        "principals": [{
+            "type": "USER",
+            "identifier": user_name
+        }],
+        "filterType": "Audit",
+        "startTime": str(time_filter)
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+    response_data = response.json()
+    response_items = response_data.get("data", {}).get("totalItems", 0)
+
+    if response_items >= 1:
+        print("Successful login found in audit trail.")
+    else:
+        print("No Logins were found in the last 5 minutes")
+        subprocess.run(
+            ["fail-message", "No Login events were found for your user via the Harness API."],
+            check=True)
+
 #### MISC ####
 def setup_vs_code(service_port, code_server_directory):
     """
