@@ -1,13 +1,8 @@
-# File: instruqt_functions.py
-# Author: Joe Titra
-# Version: 0.1.0
-# Description: Common Functions used across the Instruqt SE Workshops
-# History:
-#   Version    |    Author    |    Date    |  Comments
-#   v0.1.0     | Joe Titra    | 06/21/2024 | Intial version migrating from bash
-#   v0.1.1     | Joe Titra    | 06/24/2024 | Added functions for HCE
+"""
+Python module used during the instantiation of Instruqt workshop environments
 
-#### IMPORTS ####
+"""
+
 import os
 import pwd
 import grp
@@ -23,8 +18,9 @@ import yaml
 
 #### GLOBAL VARIABLES ####
 HARNESS_API = "https://app.harness.io"
-####################### BEGIN FUNCTION DEFINITION #######################
-#### HARNESS ####
+
+
+#### HARNESS FUNCTIONS ####
 def verify_harness_login(api_key, account_id, user_name):
     """
     Verifies the login of a user in Harness by checking the audit logs.
@@ -289,7 +285,7 @@ def create_harness_delegate(api_key, account_id, org_id, project_id):
         print(f"  ERROR: Request failed. Status Code: {response_code}")
 
 
-#### HARNESS HCE ####
+#### HARNESS HCE FUNCTIONS ####
 def generate_hce_id(name):
     """
     Generates a probe ID based on the provided name by replacing spaces with underscores and removing dashes.
@@ -474,7 +470,7 @@ def add_probe(api_key, account_id, org_id, project_id, name, properties=None):
     return make_api_call(api_key, "add_probe", request_variables, account_id, org_id, project_id)
 
 
-#### KEYCLOAK ####
+#### KEYCLOAK FUNCTIONS ####
 def generate_keycloak_token(keycloak_endpoint, keycloak_admin_user, keycloak_admin_pwd, cleanup=False):
     """
     Generates a Keycloak bearer token.
@@ -620,7 +616,7 @@ def delete_keycloak_user(keycloak_endpoint, keycloak_realm, keycloak_token, user
                 raise SystemExit(1)
 
 
-#### INSTRUQT ####
+#### INSTRUQT FUNCTIONS ####
 def get_agent_variable(variable_name):
     """
     Retrieves the value of a specified variable using the 'agent variable get' command.
@@ -649,7 +645,7 @@ def set_agent_variable(variable_name, variable_value):
         print(f"Error setting {variable_name}: {e}")
 
 
-#### K8S ####
+#### K8S FUNCTIONS ####
 def add_k8s_service_to_hosts(service_name, namespace, hostname):
     """
     Adds a Kubernetes service IP to the /etc/hosts file.
@@ -693,7 +689,7 @@ def get_k8s_loadbalancer_ip(service_name, namespace="default", max_attempts=15):
 
     :param service_name: The name of the Kubernetes service.
     :param namespace: The namespace of the Kubernetes service. Default is 'default'.
-    param max_attempts: The maximum number of attempts to get the IP. Default is 15.
+    :param max_attempts: The maximum number of attempts to get the IP. Default is 15.
     :return: The external IP address of the LoadBalancer service.
     :raises SystemExit: If the IP address could not be retrieved within the maximum attempts.
     """
@@ -810,7 +806,7 @@ def create_k8s_secret(secret_name, secret_data, namespace="default"):
             raise SystemExit(1)
 
 
-#### MISC ####
+#### MISC FUNCTIONS ####
 def setup_vs_code(service_port, code_server_directory):
     """
     Sets up VS Code server by downloading, installing, and configuring it.
@@ -953,6 +949,3 @@ def get_gke_credentials(generator_uri, user_name, output_file):
     with open(output_file, "wb") as f:
         f.write(response.content)
     print(f"HTTP status code: {response.status_code}")
-
-
-######################## END FUNCTION DEFINITION ########################
