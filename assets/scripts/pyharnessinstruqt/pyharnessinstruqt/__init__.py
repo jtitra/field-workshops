@@ -13,8 +13,7 @@ from jinja2 import Template
 import json
 import random
 import hashlib
-from kubernetes import client
-import yaml
+from kubernetes import client, utils
 
 #### GLOBAL VARIABLES ####
 HARNESS_API = "https://app.harness.io"
@@ -749,18 +748,16 @@ def render_manifest_from_template(template_file, output_path, apps_string):
         replace_values(template_file, output_file, app_name, app_port, ip_address)
 
 
-def apply_k8s_manifests(manifests):
+def apply_k8s_manifests(manifests, namespace="default"):
     """
     Apply Kubernetes manifests.
 
     :param manifests: The path to the manifests file(s).
+    :param namespace: The namespace for the Kubernetes secret. Default is 'default'.
     """
+    k8s_client = client.ApiClient()
     for manifest in manifests:
-        with open(manifest) as f:
-            manifest_content = f.read()
-            for document in yaml.safe_load_all(manifest_content):
-                k8s_client = client.ApiClient()
-                k8s_client.create_from_dict(document)
+        utils.create_from_yaml(k8s_client, manifest, namespace=namespace)
 
 
 def wait_for_kubernetes_api(k8s_api):
@@ -792,7 +789,7 @@ def create_k8s_secret(secret_name, secret_data, namespace="default"):
     :param namespace: The namespace for the Kubernetes secret. Default is 'default'.
     :raises SystemExit: If the secret could not be created.
     """
-    print("Creating secret '{secret_name}'")
+    print(f"Creating secret '{secret_name}'")
 
     v1 = client.CoreV1Api()
     secret = client.V1Secret(
@@ -895,8 +892,7 @@ def create_systemd_service(service_content, service_name):
     :param service_content: The content to populate the .service file.
     :param service_name: The name of the service to create.
     """
-
-    service_file_path = "/etc/systemd/system/{service_name}.service"
+    service_file_path = f"/etc/systemd/system/{service_name}.service"
     with open(service_file_path, "w") as service_file:
         service_file.write(service_content)
 
