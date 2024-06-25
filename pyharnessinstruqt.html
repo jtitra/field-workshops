@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyharnessinstruqt package &mdash; pyharnessinstruqt 0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=a58bc63e"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to pyharnessinstruqt’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pyharnessinstruqt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pyharnessinstruqt package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyharnessinstruqt">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.add_k8s_service_to_hosts"><code class="docutils literal notranslate"><span class="pre">add_k8s_service_to_hosts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.add_probe"><code class="docutils literal notranslate"><span class="pre">add_probe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.apply_k8s_manifests"><code class="docutils literal notranslate"><span class="pre">apply_k8s_manifests()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.create_harness_delegate"><code class="docutils literal notranslate"><span class="pre">create_harness_delegate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.create_harness_project"><code class="docutils literal notranslate"><span class="pre">create_harness_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.create_k8s_secret"><code class="docutils literal notranslate"><span class="pre">create_k8s_secret()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.create_keycloak_user"><code class="docutils literal notranslate"><span class="pre">create_keycloak_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.create_systemd_service"><code class="docutils literal notranslate"><span class="pre">create_systemd_service()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.delete_harness_project"><code class="docutils literal notranslate"><span class="pre">delete_harness_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.delete_harness_user"><code class="docutils literal notranslate"><span class="pre">delete_harness_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.delete_keycloak_user"><code class="docutils literal notranslate"><span class="pre">delete_keycloak_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.generate_credentials_html"><code class="docutils literal notranslate"><span class="pre">generate_credentials_html()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.generate_hce_id"><code class="docutils literal notranslate"><span class="pre">generate_hce_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.generate_keycloak_token"><code class="docutils literal notranslate"><span class="pre">generate_keycloak_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.generate_random_suffix"><code class="docutils literal notranslate"><span class="pre">generate_random_suffix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.get_agent_variable"><code class="docutils literal notranslate"><span class="pre">get_agent_variable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.get_gke_credentials"><code class="docutils literal notranslate"><span class="pre">get_gke_credentials()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.get_harness_user_id"><code class="docutils literal notranslate"><span class="pre">get_harness_user_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.get_k8s_loadbalancer_ip"><code class="docutils literal notranslate"><span class="pre">get_k8s_loadbalancer_ip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.get_keycloak_user_id"><code class="docutils literal notranslate"><span class="pre">get_keycloak_user_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.invite_user_to_harness_project"><code class="docutils literal notranslate"><span class="pre">invite_user_to_harness_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.invite_user_to_harness_project_loop"><code class="docutils literal notranslate"><span class="pre">invite_user_to_harness_project_loop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.make_api_call"><code class="docutils literal notranslate"><span class="pre">make_api_call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.register_infra"><code class="docutils literal notranslate"><span class="pre">register_infra()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.render_manifest_from_template"><code class="docutils literal notranslate"><span class="pre">render_manifest_from_template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.run_command"><code class="docutils literal notranslate"><span class="pre">run_command()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.set_agent_variable"><code class="docutils literal notranslate"><span class="pre">set_agent_variable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.setup_vs_code"><code class="docutils literal notranslate"><span class="pre">setup_vs_code()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.supported_api_methods"><code class="docutils literal notranslate"><span class="pre">supported_api_methods()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.verify_harness_login"><code class="docutils literal notranslate"><span class="pre">verify_harness_login()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyharnessinstruqt.wait_for_kubernetes_api"><code class="docutils literal notranslate"><span class="pre">wait_for_kubernetes_api()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyharnessinstruqt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pyharnessinstruqt package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyharnessinstruqt.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyharnessinstruqt-package">
+<h1>pyharnessinstruqt package<a class="headerlink" href="#pyharnessinstruqt-package" title="Link to this heading"></a></h1>
+<section id="module-pyharnessinstruqt">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyharnessinstruqt" title="Link to this heading"></a></h2>
+<p>Python module used during the instantiation of Instruqt workshop environments</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.add_k8s_service_to_hosts">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">add_k8s_service_to_hosts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hostname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#add_k8s_service_to_hosts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.add_k8s_service_to_hosts" title="Link to this definition"></a></dt>
+<dd><p>Adds a Kubernetes service IP to the /etc/hosts file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>service_name</strong> – The name of the Kubernetes service.</p></li>
+<li><p><strong>namespace</strong> – The namespace of the Kubernetes service.</p></li>
+<li><p><strong>hostname</strong> – The hostname to map to the service IP.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.add_probe">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">add_probe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#add_probe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.add_probe" title="Link to this definition"></a></dt>
+<dd><p>Adds a probe to the specified infrastructure using the Chaos API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The access token for authentication</p></li>
+<li><p><strong>account_id</strong> – The account identifier</p></li>
+<li><p><strong>org_id</strong> – The organization identifier</p></li>
+<li><p><strong>project_id</strong> – The project identifier</p></li>
+<li><p><strong>name</strong> – The name of the probe</p></li>
+<li><p><strong>properties</strong> – Optional dictionary of properties to configure the probe. Defaults are used if not provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The response from the Chaos API as a JSON object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.apply_k8s_manifests">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">apply_k8s_manifests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifests</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#apply_k8s_manifests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.apply_k8s_manifests" title="Link to this definition"></a></dt>
+<dd><p>Apply Kubernetes manifests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>manifests</strong> – The path to the manifests file(s).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.create_harness_delegate">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">create_harness_delegate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#create_harness_delegate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.create_harness_delegate" title="Link to this definition"></a></dt>
+<dd><p>Creates a project-level delegate in Harness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The API key for accessing Harness API.</p></li>
+<li><p><strong>account_id</strong> – The account ID in Harness.</p></li>
+<li><p><strong>org_id</strong> – The organization ID in Harness.</p></li>
+<li><p><strong>project_id</strong> – The project ID in Harness.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.create_harness_project">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">create_harness_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#create_harness_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.create_harness_project" title="Link to this definition"></a></dt>
+<dd><p>Creates a project in Harness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The API key for accessing Harness API.</p></li>
+<li><p><strong>account_id</strong> – The account ID in Harness.</p></li>
+<li><p><strong>org_id</strong> – The organization ID in Harness.</p></li>
+<li><p><strong>project_name</strong> – The name of the project to create.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.create_k8s_secret">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">create_k8s_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">secret_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#create_k8s_secret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.create_k8s_secret" title="Link to this definition"></a></dt>
+<dd><p>Create Kubernetes secret.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>secret_name</strong> – The name of the Kubernetes secret to create.</p></li>
+<li><p><strong>namespace</strong> – The namespace for the Kubernetes secret. Default is ‘default’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>SystemExit</strong> – If the secret could not be created.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.create_keycloak_user">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">create_keycloak_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keycloak_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keycloak_realm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keycloak_token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_pwd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#create_keycloak_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.create_keycloak_user" title="Link to this definition"></a></dt>
+<dd><p>Creates a user in Keycloak.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keycloak_endpoint</strong> – The Keycloak endpoint.</p></li>
+<li><p><strong>keycloak_realm</strong> – The Keycloak realm.</p></li>
+<li><p><strong>keycloak_token</strong> – The Keycloak token.</p></li>
+<li><p><strong>user_email</strong> – The email of the user to create.</p></li>
+<li><p><strong>user_name</strong> – The name of the user to create.</p></li>
+<li><p><strong>user_pwd</strong> – The password of the user to create.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.create_systemd_service">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">create_systemd_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#create_systemd_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.create_systemd_service" title="Link to this definition"></a></dt>
+<dd><p>Creates a systemd service file and enables it to start on boot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>service_content</strong> – The content to populate the .service file.</p></li>
+<li><p><strong>service_name</strong> – The name of the service to create.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.delete_harness_project">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">delete_harness_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#delete_harness_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.delete_harness_project" title="Link to this definition"></a></dt>
+<dd><p>Deletes a project in Harness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The API key for accessing Harness API.</p></li>
+<li><p><strong>account_id</strong> – The account ID in Harness.</p></li>
+<li><p><strong>org_id</strong> – The organization ID in Harness.</p></li>
+<li><p><strong>project_id</strong> – The project ID to delete.</p></li>
+<li><p><strong>cleanup</strong> – Flag to continue the cleanup process on failure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.delete_harness_user">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">delete_harness_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#delete_harness_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.delete_harness_user" title="Link to this definition"></a></dt>
+<dd><p>Deletes a user from Harness based on their email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The API key for accessing Harness API.</p></li>
+<li><p><strong>account_id</strong> – The account ID in Harness.</p></li>
+<li><p><strong>user_email</strong> – The email of the user to delete.</p></li>
+<li><p><strong>cleanup</strong> – Flag to continue the cleanup process on failure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.delete_keycloak_user">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">delete_keycloak_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keycloak_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keycloak_realm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keycloak_token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#delete_keycloak_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.delete_keycloak_user" title="Link to this definition"></a></dt>
+<dd><p>Deletes a user from Keycloak based on their email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keycloak_endpoint</strong> – The Keycloak endpoint.</p></li>
+<li><p><strong>keycloak_realm</strong> – The Keycloak realm.</p></li>
+<li><p><strong>keycloak_token</strong> – The Keycloak token.</p></li>
+<li><p><strong>user_email</strong> – The email of the user to delete.</p></li>
+<li><p><strong>cleanup</strong> – Flag to continue the cleanup process on failure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.generate_credentials_html">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">generate_credentials_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">credentials</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#generate_credentials_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.generate_credentials_html" title="Link to this definition"></a></dt>
+<dd><p>Fetches the HTML template from a URL, populates it with credentials, and returns the generated HTML content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>credentials</strong> – List of credentials to populate the template</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rendered HTML content as a string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.generate_hce_id">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">generate_hce_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#generate_hce_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.generate_hce_id" title="Link to this definition"></a></dt>
+<dd><p>Generates a probe ID based on the provided name by replacing spaces with underscores and removing dashes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name to be used for generating the probe ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generated probe ID as a string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.generate_keycloak_token">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">generate_keycloak_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keycloak_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keycloak_admin_user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keycloak_admin_pwd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#generate_keycloak_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.generate_keycloak_token" title="Link to this definition"></a></dt>
+<dd><p>Generates a Keycloak bearer token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keycloak_endpoint</strong> – The Keycloak endpoint.</p></li>
+<li><p><strong>keycloak_admin_user</strong> – The Keycloak admin username.</p></li>
+<li><p><strong>keycloak_admin_pwd</strong> – The Keycloak admin password.</p></li>
+<li><p><strong>cleanup</strong> – Flag to continue the cleanup process on failure.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Keycloak token if successful, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.generate_random_suffix">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">generate_random_suffix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#generate_random_suffix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.generate_random_suffix" title="Link to this definition"></a></dt>
+<dd><p>Generates a random suffix by hashing a random number and taking the first 10 characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A random suffix string of 10 characters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.get_agent_variable">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">get_agent_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#get_agent_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.get_agent_variable" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the value of a specified variable using the ‘agent variable get’ command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>variable_name</strong> – The name of the variable to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the specified variable as a string, or None if an error occurs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.get_gke_credentials">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">get_gke_credentials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator_uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#get_gke_credentials"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.get_gke_credentials" title="Link to this definition"></a></dt>
+<dd><p>Get GKE cluster credentials and output to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>generator_uri</strong> – The URL of the GKE Generator API server.</p></li>
+<li><p><strong>user_name</strong> – The user to generate an env/namespace for.</p></li>
+<li><p><strong>output_file</strong> – The file to create for the new kubeconfig yaml.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.get_harness_user_id">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">get_harness_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_term</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#get_harness_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.get_harness_user_id" title="Link to this definition"></a></dt>
+<dd><p>Gets the Harness user ID based on the search term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The API key for accessing Harness API.</p></li>
+<li><p><strong>account_id</strong> – The account ID in Harness.</p></li>
+<li><p><strong>search_term</strong> – The term to search for the user.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The user ID if found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.get_k8s_loadbalancer_ip">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">get_k8s_loadbalancer_ip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#get_k8s_loadbalancer_ip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.get_k8s_loadbalancer_ip" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the external IP of a Kubernetes LoadBalancer service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>service_name</strong> – The name of the Kubernetes service.</p></li>
+<li><p><strong>namespace</strong> – The namespace of the Kubernetes service. Default is ‘default’.</p></li>
+<li><p><strong>max_attempts</strong> – The maximum number of attempts to get the IP. Default is 15.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The external IP address of the LoadBalancer service.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>SystemExit</strong> – If the IP address could not be retrieved within the maximum attempts.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.get_keycloak_user_id">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">get_keycloak_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keycloak_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keycloak_realm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keycloak_token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_term</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#get_keycloak_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.get_keycloak_user_id" title="Link to this definition"></a></dt>
+<dd><p>Gets the Keycloak user ID based on the search term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keycloak_endpoint</strong> – The Keycloak endpoint.</p></li>
+<li><p><strong>keycloak_realm</strong> – The Keycloak realm.</p></li>
+<li><p><strong>keycloak_token</strong> – The Keycloak token.</p></li>
+<li><p><strong>search_term</strong> – The term to search for the user.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The user ID if found, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.invite_user_to_harness_project">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">invite_user_to_harness_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#invite_user_to_harness_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.invite_user_to_harness_project" title="Link to this definition"></a></dt>
+<dd><p>Invites a user to a Harness project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The API key for accessing Harness API.</p></li>
+<li><p><strong>account_id</strong> – The account ID in Harness.</p></li>
+<li><p><strong>org_id</strong> – The organization ID in Harness.</p></li>
+<li><p><strong>project_id</strong> – The project ID in Harness.</p></li>
+<li><p><strong>user_email</strong> – The email of the user to invite.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.invite_user_to_harness_project_loop">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">invite_user_to_harness_project_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#invite_user_to_harness_project_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.invite_user_to_harness_project_loop" title="Link to this definition"></a></dt>
+<dd><p>Invites a user to a Harness project with retry logic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The API key for accessing Harness API.</p></li>
+<li><p><strong>account_id</strong> – The account ID in Harness.</p></li>
+<li><p><strong>org_id</strong> – The organization ID in Harness.</p></li>
+<li><p><strong>project_id</strong> – The project ID in Harness.</p></li>
+<li><p><strong>user_email</strong> – The email of the user to invite.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.make_api_call">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">make_api_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_variables</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#make_api_call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.make_api_call" title="Link to this definition"></a></dt>
+<dd><p>Makes an API call to the Chaos API with the specified query type and variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The access token for authentication</p></li>
+<li><p><strong>account_id</strong> – The account identifier</p></li>
+<li><p><strong>org_id</strong> – The organization identifier</p></li>
+<li><p><strong>project_id</strong> – The project identifier</p></li>
+<li><p><strong>query_type</strong> – The type of query to be executed (e.g., ‘register_infra’, ‘add_probe’)</p></li>
+<li><p><strong>request_variables</strong> – The variables to be included in the request payload</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The response from the Chaos API as a JSON object</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>SystemError</strong> – If an HTTP error or other error occurs during the API call</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.register_infra">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">register_infra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#register_infra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.register_infra" title="Link to this definition"></a></dt>
+<dd><p>Registers infrastructure with the specified details using the Chaos API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The access token for authentication</p></li>
+<li><p><strong>account_id</strong> – The account identifier</p></li>
+<li><p><strong>org_id</strong> – The organization identifier</p></li>
+<li><p><strong>project_id</strong> – The project identifier</p></li>
+<li><p><strong>name</strong> – The name of the chaos infrastructure</p></li>
+<li><p><strong>env_id</strong> – The environment identifier the chaos infrastructure will be enabled in</p></li>
+<li><p><strong>properties</strong> – Optional dictionary of properties to configure the infrastructure. Defaults are used if not provided.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The response from the Chaos API as a JSON object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.render_manifest_from_template">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">render_manifest_from_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apps_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#render_manifest_from_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.render_manifest_from_template" title="Link to this definition"></a></dt>
+<dd><p>Renders a Kubernetes manifest from a template by replacing placeholders with actual values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template_file</strong> – The path to the template file.</p></li>
+<li><p><strong>output_path</strong> – The path where the rendered manifest will be saved.</p></li>
+<li><p><strong>apps_string</strong> – A comma-separated string of app details in the format ‘app_name:app_port:ip_address’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.run_command">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">run_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#run_command"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.run_command" title="Link to this definition"></a></dt>
+<dd><p>Runs a shell command and prints success or failure message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>command</strong> – The command to run.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.set_agent_variable">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">set_agent_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#set_agent_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.set_agent_variable" title="Link to this definition"></a></dt>
+<dd><p>Sets the value of a specified variable using the ‘agent variable set’ command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>variable_name</strong> – The name of the variable to set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.setup_vs_code">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">setup_vs_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code_server_directory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#setup_vs_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.setup_vs_code" title="Link to this definition"></a></dt>
+<dd><p>Sets up VS Code server by downloading, installing, and configuring it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>service_port</strong> – The port on which the VS Code server will run.</p></li>
+<li><p><strong>code_server_directory</strong> – The directory where the VS Code server will store its files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.supported_api_methods">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">supported_api_methods</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#supported_api_methods"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.supported_api_methods" title="Link to this definition"></a></dt>
+<dd><p>Returns the query data for the specified request type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request_type</strong> – The type of request (e.g., ‘register_infra’, ‘add_probe’)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the mutation, request type, and return fields for the specified request type</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the request type is unsupported</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.verify_harness_login">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">verify_harness_login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">account_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#verify_harness_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.verify_harness_login" title="Link to this definition"></a></dt>
+<dd><p>Verifies the login of a user in Harness by checking the audit logs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> – The API key for accessing Harness API.</p></li>
+<li><p><strong>account_id</strong> – The account ID in Harness.</p></li>
+<li><p><strong>user_name</strong> – The user name to verify the login for.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyharnessinstruqt.wait_for_kubernetes_api">
+<span class="sig-prename descclassname"><span class="pre">pyharnessinstruqt.</span></span><span class="sig-name descname"><span class="pre">wait_for_kubernetes_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k8s_api</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyharnessinstruqt.html#wait_for_kubernetes_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyharnessinstruqt.wait_for_kubernetes_api" title="Link to this definition"></a></dt>
+<dd><p>Enables bash completion for kubectl.
+Waits for the Kubernetes API server to become available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k8s_api</strong> – The URL of the Kubernetes API server. (e.g., ‘<a class="reference external" href="http://localhost:8001/api">http://localhost:8001/api</a>’)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to pyharnessinstruqt’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Joe Titra.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyharnessinstruqt &mdash; pyharnessinstruqt 0.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=a58bc63e"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pyharnessinstruqt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../pyharnessinstruqt.html">pyharnessinstruqt package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyharnessinstruqt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyharnessinstruqt</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyharnessinstruqt</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Python module used during the instantiation of Instruqt workshop environments</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pwd</span>
+<span class="kn">import</span> <span class="nn">grp</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">from</span> <span class="nn">kubernetes</span> <span class="kn">import</span> <span class="n">client</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="c1">#### GLOBAL VARIABLES ####</span>
+<span class="n">HARNESS_API</span> <span class="o">=</span> <span class="s2">&quot;https://app.harness.io&quot;</span>
+
+
+<span class="c1">#### HARNESS FUNCTIONS ####</span>
+<div class="viewcode-block" id="verify_harness_login">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.verify_harness_login">[docs]</a>
+<span class="k">def</span> <span class="nf">verify_harness_login</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">user_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Verifies the login of a user in Harness by checking the audit logs.</span>
+
+<span class="sd">    :param api_key: The API key for accessing Harness API.</span>
+<span class="sd">    :param account_id: The account ID in Harness.</span>
+<span class="sd">    :param user_name: The user name to verify the login for.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time_filter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-</span> <span class="mi">300000</span>  <span class="c1"># Current time in milliseconds minus 5 minutes</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validating Harness login for user &#39;</span><span class="si">{</span><span class="n">user_name</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HARNESS_API</span><span class="si">}</span><span class="s2">/gateway/audit/api/audits/list?accountIdentifier=</span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-api-key&quot;</span><span class="p">:</span> <span class="n">api_key</span>
+    <span class="p">}</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;actions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;LOGIN&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;principals&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;USER&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identifier&quot;</span><span class="p">:</span> <span class="n">user_name</span>
+        <span class="p">}],</span>
+        <span class="s2">&quot;filterType&quot;</span><span class="p">:</span> <span class="s2">&quot;Audit&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">time_filter</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">response_items</span> <span class="o">=</span> <span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;totalItems&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response_items</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successful login found in audit trail.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No Logins were found in the last 5 minutes&quot;</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;fail-message&quot;</span><span class="p">,</span> <span class="s2">&quot;No Login events were found for your user via the Harness API.&quot;</span><span class="p">],</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_harness_project">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.create_harness_project">[docs]</a>
+<span class="k">def</span> <span class="nf">create_harness_project</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a project in Harness.</span>
+
+<span class="sd">    :param api_key: The API key for accessing Harness API.</span>
+<span class="sd">    :param account_id: The account ID in Harness.</span>
+<span class="sd">    :param org_id: The organization ID in Harness.</span>
+<span class="sd">    :param project_name: The name of the project to create.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HARNESS_API</span><span class="si">}</span><span class="s2">/gateway/ng/api/projects?accountIdentifier=</span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2">&amp;orgIdentifier=</span><span class="si">{</span><span class="n">org_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-api-key&quot;</span><span class="p">:</span> <span class="n">api_key</span>
+    <span class="p">}</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">project_name</span><span class="p">,</span>
+            <span class="s2">&quot;orgIdentifier&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">,</span>
+            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Automated build via Instruqt.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;identifier&quot;</span><span class="p">:</span> <span class="n">project_name</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;automated&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;instruqt&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">response_status</span> <span class="o">=</span> <span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response_status</span> <span class="o">==</span> <span class="s2">&quot;SUCCESS&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Project &#39;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&#39; created successfully.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create project &#39;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">&#39;. Response: </span><span class="si">{</span><span class="n">response_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="invite_user_to_harness_project">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.invite_user_to_harness_project">[docs]</a>
+<span class="k">def</span> <span class="nf">invite_user_to_harness_project</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">user_email</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Invites a user to a Harness project.</span>
+
+<span class="sd">    :param api_key: The API key for accessing Harness API.</span>
+<span class="sd">    :param account_id: The account ID in Harness.</span>
+<span class="sd">    :param org_id: The organization ID in Harness.</span>
+<span class="sd">    :param project_id: The project ID in Harness.</span>
+<span class="sd">    :param user_email: The email of the user to invite.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HARNESS_API</span><span class="si">}</span><span class="s2">/gateway/ng/api/user/users?accountIdentifier=</span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2">&amp;orgIdentifier=</span><span class="si">{</span><span class="n">org_id</span><span class="si">}</span><span class="s2">&amp;projectIdentifier=</span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-api-key&quot;</span><span class="p">:</span> <span class="n">api_key</span>
+    <span class="p">}</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;emails&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">user_email</span><span class="p">],</span>
+        <span class="s2">&quot;userGroups&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;_project_all_users&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;roleBindings&quot;</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="s2">&quot;resourceGroupIdentifier&quot;</span><span class="p">:</span> <span class="s2">&quot;_all_project_level_resources&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;roleIdentifier&quot;</span><span class="p">:</span> <span class="s2">&quot;_project_admin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;roleName&quot;</span><span class="p">:</span> <span class="s2">&quot;Project Admin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;resourceGroupName&quot;</span><span class="p">:</span> <span class="s2">&quot;All Project Level Resources&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;managedRole&quot;</span><span class="p">:</span> <span class="kc">True</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="invite_user_to_harness_project_loop">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.invite_user_to_harness_project_loop">[docs]</a>
+<span class="k">def</span> <span class="nf">invite_user_to_harness_project_loop</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">user_email</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Invites a user to a Harness project with retry logic.</span>
+
+<span class="sd">    :param api_key: The API key for accessing Harness API.</span>
+<span class="sd">    :param account_id: The account ID in Harness.</span>
+<span class="sd">    :param org_id: The organization ID in Harness.</span>
+<span class="sd">    :param project_id: The project ID in Harness.</span>
+<span class="sd">    :param user_email: The email of the user to invite.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">max_attempts</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">invite_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Inviting the user to the project...&quot;</span><span class="p">)</span>
+    <span class="n">invite_response</span> <span class="o">=</span> <span class="n">invite_user_to_harness_project</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">user_email</span><span class="p">)</span>
+    <span class="n">invite_status</span> <span class="o">=</span> <span class="n">invite_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DEBUG: Status: </span><span class="si">{</span><span class="n">invite_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">invite_status</span> <span class="o">!=</span> <span class="s2">&quot;SUCCESS&quot;</span> <span class="ow">and</span> <span class="n">invite_attempts</span> <span class="o">&lt;</span> <span class="n">max_attempts</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User invite to project has failed. Retrying... Attempt: </span><span class="si">{</span><span class="n">invite_attempts</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">invite_response</span> <span class="o">=</span> <span class="n">invite_user_to_harness_project</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">user_email</span><span class="p">)</span>
+        <span class="n">invite_status</span> <span class="o">=</span> <span class="n">invite_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  DEBUG: Status: </span><span class="si">{</span><span class="n">invite_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">invite_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">invite_status</span> <span class="o">==</span> <span class="s2">&quot;SUCCESS&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The API hit worked, your user was invited successfully.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API hit to invite the user to the project has failed after </span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2"> attempts. Response: </span><span class="si">{</span><span class="n">invite_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="delete_harness_project">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.delete_harness_project">[docs]</a>
+<span class="k">def</span> <span class="nf">delete_harness_project</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deletes a project in Harness.</span>
+
+<span class="sd">    :param api_key: The API key for accessing Harness API.</span>
+<span class="sd">    :param account_id: The account ID in Harness.</span>
+<span class="sd">    :param org_id: The organization ID in Harness.</span>
+<span class="sd">    :param project_id: The project ID to delete.</span>
+<span class="sd">    :param cleanup: Flag to continue the cleanup process on failure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HARNESS_API</span><span class="si">}</span><span class="s2">/gateway/ng/api/projects/</span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2">?accountIdentifier=</span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2">&amp;orgIdentifier=</span><span class="si">{</span><span class="n">org_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;x-api-key&quot;</span><span class="p">:</span> <span class="n">api_key</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">response_status</span> <span class="o">=</span> <span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response_status</span> <span class="o">==</span> <span class="s2">&quot;SUCCESS&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Project &#39;</span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2">&#39; deleted successfully.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to delete project &#39;</span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2">&#39;. Response: </span><span class="si">{</span><span class="n">response_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attempting to continue the cleanup process...&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_harness_user_id">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.get_harness_user_id">[docs]</a>
+<span class="k">def</span> <span class="nf">get_harness_user_id</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">search_term</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the Harness user ID based on the search term.</span>
+
+<span class="sd">    :param api_key: The API key for accessing Harness API.</span>
+<span class="sd">    :param account_id: The account ID in Harness.</span>
+<span class="sd">    :param search_term: The term to search for the user.</span>
+<span class="sd">    :return: The user ID if found, otherwise None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HARNESS_API</span><span class="si">}</span><span class="s2">/gateway/ng/api/user/aggregate?accountIdentifier=</span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2">&amp;searchTerm=</span><span class="si">{</span><span class="n">search_term</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-api-key&quot;</span><span class="p">:</span> <span class="n">api_key</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="p">[{}])[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;uuid&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Harness User ID: </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">user_id</span></div>
+
+
+
+<div class="viewcode-block" id="delete_harness_user">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.delete_harness_user">[docs]</a>
+<span class="k">def</span> <span class="nf">delete_harness_user</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">user_email</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deletes a user from Harness based on their email.</span>
+
+<span class="sd">    :param api_key: The API key for accessing Harness API.</span>
+<span class="sd">    :param account_id: The account ID in Harness.</span>
+<span class="sd">    :param user_email: The email of the user to delete.</span>
+<span class="sd">    :param cleanup: Flag to continue the cleanup process on failure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">get_harness_user_id</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">user_email</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">user_id</span> <span class="o">==</span> <span class="s2">&quot;null&quot;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to determine the User ID.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting Harness User ID: </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HARNESS_API</span><span class="si">}</span><span class="s2">/gateway/ng/api/user/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">?accountIdentifier=</span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;x-api-key&quot;</span><span class="p">:</span> <span class="n">api_key</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_status</span> <span class="o">=</span> <span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response_status</span> <span class="o">==</span> <span class="s2">&quot;SUCCESS&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User deleted successfully.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to delete user. Response: </span><span class="si">{</span><span class="n">response_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attempting to continue the cleanup process...&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_harness_delegate">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.create_harness_delegate">[docs]</a>
+<span class="k">def</span> <span class="nf">create_harness_delegate</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a project-level delegate in Harness.</span>
+
+<span class="sd">    :param api_key: The API key for accessing Harness API.</span>
+<span class="sd">    :param account_id: The account ID in Harness.</span>
+<span class="sd">    :param org_id: The organization ID in Harness.</span>
+<span class="sd">    :param project_id: The project ID in Harness.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HARNESS_API</span><span class="si">}</span><span class="s2">/gateway/ng/api/download-delegates/kubernetes?accountIdentifier=</span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2">&amp;orgIdentifier=</span><span class="si">{</span><span class="n">org_id</span><span class="si">}</span><span class="s2">&amp;projectIdentifier=</span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-api-key&quot;</span><span class="p">:</span> <span class="n">api_key</span>
+    <span class="p">}</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;instruqt-workshop-delegate&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Automatically created for this lab&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;clusterPermissionType&quot;</span><span class="p">:</span> <span class="s2">&quot;CLUSTER_ADMIN&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">response_code</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;instruqt-delegate.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">8192</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">response_code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;yq&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="s1">&#39;instruqt-delegate.yaml&#39;</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  INFO: Valid YAML file received. Applying it.&quot;</span><span class="p">)</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;kubectl&#39;</span><span class="p">,</span> <span class="s1">&#39;apply&#39;</span><span class="p">,</span> <span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;instruqt-delegate.yaml&#39;</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ERROR: The file is not a valid YAML.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ERROR: Request failed. Status Code: </span><span class="si">{</span><span class="n">response_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#### HARNESS HCE FUNCTIONS ####</span>
+<div class="viewcode-block" id="generate_hce_id">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.generate_hce_id">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_hce_id</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a probe ID based on the provided name by replacing spaces with underscores and removing dashes.</span>
+
+<span class="sd">    :param name: The name to be used for generating the probe ID</span>
+<span class="sd">    :return: The generated probe ID as a string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="supported_api_methods">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.supported_api_methods">[docs]</a>
+<span class="k">def</span> <span class="nf">supported_api_methods</span><span class="p">(</span><span class="n">request_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the query data for the specified request type.</span>
+
+<span class="sd">    :param request_type: The type of request (e.g., &#39;register_infra&#39;, &#39;add_probe&#39;)</span>
+<span class="sd">    :return: A dictionary containing the mutation, request type, and return fields for the specified request type</span>
+<span class="sd">    :raises ValueError: If the request type is unsupported</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">match</span> <span class="n">request_type</span><span class="p">:</span>
+        <span class="k">case</span> <span class="s2">&quot;register_infra&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;mutation&quot;</span><span class="p">:</span> <span class="s2">&quot;registerInfra&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="s2">&quot;RegisterInfraRequest&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;return&quot;</span><span class="p">:</span> <span class="s2">&quot;manifest&quot;</span>
+            <span class="p">}</span>
+        <span class="k">case</span> <span class="s2">&quot;add_probe&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;mutation&quot;</span><span class="p">:</span> <span class="s2">&quot;addProbe&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="s2">&quot;ProbeRequest&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;return&quot;</span><span class="p">:</span> <span class="s2">&quot;name type&quot;</span>
+            <span class="p">}</span>
+        <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported request type: </span><span class="si">{</span><span class="n">request_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="make_api_call">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.make_api_call">[docs]</a>
+<span class="k">def</span> <span class="nf">make_api_call</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">query_type</span><span class="p">,</span> <span class="n">request_variables</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes an API call to the Chaos API with the specified query type and variables.</span>
+
+<span class="sd">    :param api_key: The access token for authentication</span>
+<span class="sd">    :param account_id: The account identifier</span>
+<span class="sd">    :param org_id: The organization identifier</span>
+<span class="sd">    :param project_id: The project identifier</span>
+<span class="sd">    :param query_type: The type of query to be executed (e.g., &#39;register_infra&#39;, &#39;add_probe&#39;)</span>
+<span class="sd">    :param request_variables: The variables to be included in the request payload</span>
+<span class="sd">    :return: The response from the Chaos API as a JSON object</span>
+<span class="sd">    :raises SystemError: If an HTTP error or other error occurs during the API call</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query_data</span> <span class="o">=</span> <span class="n">supported_api_methods</span><span class="p">(</span><span class="n">query_type</span><span class="p">)</span>
+    <span class="n">chaos_uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HARNESS_API</span><span class="si">}</span><span class="s2">/gateway/chaos/manager/api/query&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-api-key&quot;</span><span class="p">:</span> <span class="n">api_key</span>
+    <span class="p">}</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    mutation </span><span class="si">{</span><span class="n">query_data</span><span class="p">[</span><span class="s1">&#39;mutation&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">($request: </span><span class="si">{</span><span class="n">query_data</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">!, $identifiers: IdentifiersRequest!) </span><span class="se">{{</span>
+<span class="s2">        </span><span class="si">{</span><span class="n">query_data</span><span class="p">[</span><span class="s1">&#39;mutation&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">(request: $request, identifiers: $identifiers) </span><span class="se">{{</span>
+<span class="s2">            </span><span class="si">{</span><span class="n">query_data</span><span class="p">[</span><span class="s1">&#39;return&#39;</span><span class="p">]</span><span class="si">}</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">variables</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">request_variables</span><span class="p">,</span>
+        <span class="s2">&quot;identifiers&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;accountIdentifier&quot;</span><span class="p">:</span> <span class="n">account_id</span><span class="p">,</span>
+            <span class="s2">&quot;orgIdentifier&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">,</span>
+            <span class="s2">&quot;projectIdentifier&quot;</span><span class="p">:</span> <span class="n">project_id</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+        <span class="s2">&quot;variables&quot;</span><span class="p">:</span> <span class="n">variables</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">chaos_uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>  <span class="c1"># Raises HTTPError if the response status is 4xx/5xx</span>
+        <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;errors&#39;</span> <span class="ow">in</span> <span class="n">json_response</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GraphQL errors: </span><span class="si">{</span><span class="n">json_response</span><span class="p">[</span><span class="s1">&#39;errors&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json_response</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">http_err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTTP error occurred: </span><span class="si">{</span><span class="n">http_err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">SystemError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Other error occurred: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="register_infra">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.register_infra">[docs]</a>
+<span class="k">def</span> <span class="nf">register_infra</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">env_id</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Registers infrastructure with the specified details using the Chaos API.</span>
+
+<span class="sd">    :param api_key: The access token for authentication</span>
+<span class="sd">    :param account_id: The account identifier</span>
+<span class="sd">    :param org_id: The organization identifier</span>
+<span class="sd">    :param project_id: The project identifier</span>
+<span class="sd">    :param name: The name of the chaos infrastructure</span>
+<span class="sd">    :param env_id: The environment identifier the chaos infrastructure will be enabled in</span>
+<span class="sd">    :param properties: Optional dictionary of properties to configure the infrastructure. Defaults are used if not provided.</span>
+<span class="sd">    :return: The response from the Chaos API as a JSON object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">properties</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="c1"># Set default values for properties if not provided</span>
+    <span class="n">default_properties</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;platformName&quot;</span><span class="p">:</span> <span class="s2">&quot;Kubernetes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;infraNamespace&quot;</span><span class="p">:</span> <span class="s2">&quot;hce&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;serviceAccount&quot;</span><span class="p">:</span> <span class="s2">&quot;hce&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;infraScope&quot;</span><span class="p">:</span> <span class="s2">&quot;namespace&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;infraNsExists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;installationType&quot;</span><span class="p">:</span> <span class="s2">&quot;MANIFEST&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;isAutoUpgradeEnabled&quot;</span><span class="p">:</span> <span class="kc">False</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Update default properties with any provided properties</span>
+    <span class="n">request_variables</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_properties</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">}</span>
+    <span class="n">request_variables</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">request_variables</span><span class="p">[</span><span class="s2">&quot;environmentID&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env_id</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">make_api_call</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="s2">&quot;register_infra&quot;</span><span class="p">,</span> <span class="n">request_variables</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span>
+
+    <span class="c1"># Extract the YAML manifest from the response</span>
+    <span class="n">manifest_yaml</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;registerInfra&quot;</span><span class="p">][</span><span class="s2">&quot;manifest&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Save the YAML manifest to a file</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/tmp/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_manifest.yaml&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">manifest_yaml</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">response</span></div>
+
+
+
+<div class="viewcode-block" id="add_probe">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.add_probe">[docs]</a>
+<span class="k">def</span> <span class="nf">add_probe</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adds a probe to the specified infrastructure using the Chaos API.</span>
+
+<span class="sd">    :param api_key: The access token for authentication</span>
+<span class="sd">    :param account_id: The account identifier</span>
+<span class="sd">    :param org_id: The organization identifier</span>
+<span class="sd">    :param project_id: The project identifier</span>
+<span class="sd">    :param name: The name of the probe</span>
+<span class="sd">    :param properties: Optional dictionary of properties to configure the probe. Defaults are used if not provided.</span>
+<span class="sd">    :return: The response from the Chaos API as a JSON object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">properties</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="n">hce_id</span> <span class="o">=</span> <span class="n">generate_hce_id</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    
+    <span class="c1"># Set default values for properties if not provided</span>
+    <span class="n">default_properties</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;probeTimeout&quot;</span><span class="p">:</span> <span class="s2">&quot;10s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;interval&quot;</span><span class="p">:</span> <span class="s2">&quot;5s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;retry&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;attempt&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;probePollingInterval&quot;</span><span class="p">:</span> <span class="s2">&quot;1s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;initialDelay&quot;</span><span class="p">:</span> <span class="s2">&quot;2s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;stopOnFailure&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://example.com&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;get&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;criteria&quot;</span><span class="p">:</span> <span class="s2">&quot;==&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;responseCode&quot;</span><span class="p">:</span> <span class="s2">&quot;200&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Update default properties with any provided properties</span>
+    <span class="n">kubernetes_http_properties</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_properties</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">}</span>
+    
+    <span class="n">request_variables</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;probeID&quot;</span><span class="p">:</span> <span class="n">hce_id</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;httpProbe&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;infrastructureType&quot;</span><span class="p">:</span> <span class="s2">&quot;Kubernetes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;kubernetesHTTPProperties&quot;</span><span class="p">:</span> <span class="n">kubernetes_http_properties</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">make_api_call</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="s2">&quot;add_probe&quot;</span><span class="p">,</span> <span class="n">request_variables</span><span class="p">,</span> <span class="n">account_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">project_id</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#### KEYCLOAK FUNCTIONS ####</span>
+<div class="viewcode-block" id="generate_keycloak_token">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.generate_keycloak_token">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_keycloak_token</span><span class="p">(</span><span class="n">keycloak_endpoint</span><span class="p">,</span> <span class="n">keycloak_admin_user</span><span class="p">,</span> <span class="n">keycloak_admin_pwd</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a Keycloak bearer token.</span>
+
+<span class="sd">    :param keycloak_endpoint: The Keycloak endpoint.</span>
+<span class="sd">    :param keycloak_admin_user: The Keycloak admin username.</span>
+<span class="sd">    :param keycloak_admin_pwd: The Keycloak admin password.</span>
+<span class="sd">    :param cleanup: Flag to continue the cleanup process on failure.</span>
+<span class="sd">    :return: The Keycloak token if successful, otherwise None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">keycloak_endpoint</span><span class="si">}</span><span class="s2">/realms/master/protocol/openid-connect/token&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/x-www-form-urlencoded&quot;</span>
+    <span class="p">}</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">keycloak_admin_user</span><span class="p">,</span>
+        <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">keycloak_admin_pwd</span><span class="p">,</span>
+        <span class="s2">&quot;grant_type&quot;</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="s2">&quot;admin-cli&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Curl command failed.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attempting to continue the cleanup process...&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">keycloak_token</span> <span class="o">=</span> <span class="n">response_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;access_token&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">keycloak_token</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Token generation has failed. Response was:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">response_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attempting to continue the cleanup process...&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Token generation complete&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">keycloak_token</span></div>
+
+
+
+<div class="viewcode-block" id="create_keycloak_user">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.create_keycloak_user">[docs]</a>
+<span class="k">def</span> <span class="nf">create_keycloak_user</span><span class="p">(</span><span class="n">keycloak_endpoint</span><span class="p">,</span> <span class="n">keycloak_realm</span><span class="p">,</span> <span class="n">keycloak_token</span><span class="p">,</span> <span class="n">user_email</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span> <span class="n">user_pwd</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a user in Keycloak.</span>
+
+<span class="sd">    :param keycloak_endpoint: The Keycloak endpoint.</span>
+<span class="sd">    :param keycloak_realm: The Keycloak realm.</span>
+<span class="sd">    :param keycloak_token: The Keycloak token.</span>
+<span class="sd">    :param user_email: The email of the user to create.</span>
+<span class="sd">    :param user_name: The name of the user to create.</span>
+<span class="sd">    :param user_pwd: The password of the user to create.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">keycloak_endpoint</span><span class="si">}</span><span class="s2">/admin/realms/</span><span class="si">{</span><span class="n">keycloak_realm</span><span class="si">}</span><span class="s2">/users&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">keycloak_token</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">}</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user_email</span><span class="p">,</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">user_email</span><span class="p">,</span>
+        <span class="s2">&quot;firstName&quot;</span><span class="p">:</span> <span class="n">user_name</span><span class="p">,</span>
+        <span class="s2">&quot;lastName&quot;</span><span class="p">:</span> <span class="s2">&quot;Student&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;emailVerified&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;requiredActions&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;groups&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;credentials&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">user_pwd</span><span class="p">,</span>
+                <span class="s2">&quot;temporary&quot;</span><span class="p">:</span> <span class="kc">False</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="n">response_code</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTTP status code: </span><span class="si">{</span><span class="n">response_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response_code</span> <span class="o">!=</span> <span class="mi">201</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The user creation API is not returning 201... this was the response: </span><span class="si">{</span><span class="n">response_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_keycloak_user_id">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.get_keycloak_user_id">[docs]</a>
+<span class="k">def</span> <span class="nf">get_keycloak_user_id</span><span class="p">(</span><span class="n">keycloak_endpoint</span><span class="p">,</span> <span class="n">keycloak_realm</span><span class="p">,</span> <span class="n">keycloak_token</span><span class="p">,</span> <span class="n">search_term</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the Keycloak user ID based on the search term.</span>
+
+<span class="sd">    :param keycloak_endpoint: The Keycloak endpoint.</span>
+<span class="sd">    :param keycloak_realm: The Keycloak realm.</span>
+<span class="sd">    :param keycloak_token: The Keycloak token.</span>
+<span class="sd">    :param search_term: The term to search for the user.</span>
+<span class="sd">    :return: The user ID if found, otherwise None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">keycloak_endpoint</span><span class="si">}</span><span class="s2">/admin/realms/</span><span class="si">{</span><span class="n">keycloak_realm</span><span class="si">}</span><span class="s2">/users?briefRepresentation=true&amp;first=0&amp;max=11&amp;search=</span><span class="si">{</span><span class="n">search_term</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">keycloak_token</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+    <span class="n">response_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">response_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">response_data</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Keycloak User ID: </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">user_id</span></div>
+
+
+
+<div class="viewcode-block" id="delete_keycloak_user">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.delete_keycloak_user">[docs]</a>
+<span class="k">def</span> <span class="nf">delete_keycloak_user</span><span class="p">(</span><span class="n">keycloak_endpoint</span><span class="p">,</span> <span class="n">keycloak_realm</span><span class="p">,</span> <span class="n">keycloak_token</span><span class="p">,</span> <span class="n">user_email</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deletes a user from Keycloak based on their email.</span>
+
+<span class="sd">    :param keycloak_endpoint: The Keycloak endpoint.</span>
+<span class="sd">    :param keycloak_realm: The Keycloak realm.</span>
+<span class="sd">    :param keycloak_token: The Keycloak token.</span>
+<span class="sd">    :param user_email: The email of the user to delete.</span>
+<span class="sd">    :param cleanup: Flag to continue the cleanup process on failure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">get_keycloak_user_id</span><span class="p">(</span><span class="n">keycloak_endpoint</span><span class="p">,</span> <span class="n">keycloak_realm</span><span class="p">,</span> <span class="n">keycloak_token</span><span class="p">,</span> <span class="n">user_email</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to determine the User ID.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleting Keycloak User ID: </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">keycloak_endpoint</span><span class="si">}</span><span class="s2">/admin/realms/</span><span class="si">{</span><span class="n">keycloak_realm</span><span class="si">}</span><span class="s2">/users/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">keycloak_token</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">}</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">response_code</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTTP status code: </span><span class="si">{</span><span class="n">response_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response_code</span> <span class="o">!=</span> <span class="mi">204</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The user deletion API is not returning 204... this was the response: </span><span class="si">{</span><span class="n">response_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attempting to continue the cleanup process...&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#### INSTRUQT FUNCTIONS ####</span>
+<div class="viewcode-block" id="get_agent_variable">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.get_agent_variable">[docs]</a>
+<span class="k">def</span> <span class="nf">get_agent_variable</span><span class="p">(</span><span class="n">variable_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the value of a specified variable using the &#39;agent variable get&#39; command.</span>
+
+<span class="sd">    :param variable_name: The name of the variable to retrieve.</span>
+<span class="sd">    :return: The value of the specified variable as a string, or None if an error occurs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">variable_value</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">variable_value</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error retrieving </span><span class="si">{</span><span class="n">variable_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="set_agent_variable">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.set_agent_variable">[docs]</a>
+<span class="k">def</span> <span class="nf">set_agent_variable</span><span class="p">(</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">variable_value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets the value of a specified variable using the &#39;agent variable set&#39; command.</span>
+
+<span class="sd">    :param variable_name: The name of the variable to set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="s2">&quot;set&quot;</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error setting </span><span class="si">{</span><span class="n">variable_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#### K8S FUNCTIONS ####</span>
+<div class="viewcode-block" id="add_k8s_service_to_hosts">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.add_k8s_service_to_hosts">[docs]</a>
+<span class="k">def</span> <span class="nf">add_k8s_service_to_hosts</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adds a Kubernetes service IP to the /etc/hosts file.</span>
+
+<span class="sd">    :param service_name: The name of the Kubernetes service.</span>
+<span class="sd">    :param namespace: The namespace of the Kubernetes service.</span>
+<span class="sd">    :param hostname: The hostname to map to the service IP.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">retries</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">max_retries</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">retry_delay</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># seconds</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding &#39;</span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2">&#39; to the hosts file.&quot;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">retries</span> <span class="o">&lt;</span> <span class="n">max_retries</span><span class="p">:</span>
+        <span class="n">ip_address</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">getoutput</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;kubectl get service </span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2"> -n </span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2"> -o=jsonpath=&#39;</span><span class="se">{{</span><span class="s2">.status.loadBalancer.ingress[0].ip</span><span class="se">}}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ip_address</span> <span class="ow">and</span> <span class="n">ip_address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;&lt;none&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully retrieved IP address: </span><span class="si">{</span><span class="n">ip_address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="n">retries</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">retries</span> <span class="o">==</span> <span class="n">max_retries</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to retrieve IP for service </span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2"> in namespace </span><span class="si">{</span><span class="n">namespace</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">max_retries</span><span class="si">}</span><span class="s2"> attempts.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrying in </span><span class="si">{</span><span class="n">retry_delay</span><span class="si">}</span><span class="s2"> seconds... (</span><span class="si">{</span><span class="n">retries</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_retries</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+
+    <span class="c1"># Update /etc/hosts</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/etc/hosts&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">hosts_content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/etc/hosts&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">hosts_content</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ip_address</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added </span><span class="si">{</span><span class="n">hostname</span><span class="si">}</span><span class="s2"> with IP </span><span class="si">{</span><span class="n">ip_address</span><span class="si">}</span><span class="s2"> to /etc/hosts&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_k8s_loadbalancer_ip">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.get_k8s_loadbalancer_ip">[docs]</a>
+<span class="k">def</span> <span class="nf">get_k8s_loadbalancer_ip</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the external IP of a Kubernetes LoadBalancer service.</span>
+
+<span class="sd">    :param service_name: The name of the Kubernetes service.</span>
+<span class="sd">    :param namespace: The namespace of the Kubernetes service. Default is &#39;default&#39;.</span>
+<span class="sd">    :param max_attempts: The maximum number of attempts to get the IP. Default is 15.</span>
+<span class="sd">    :return: The external IP address of the LoadBalancer service.</span>
+<span class="sd">    :raises SystemExit: If the IP address could not be retrieved within the maximum attempts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Waiting for LoadBalancer IP for service </span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">sleep_time</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">CoreV1Api</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">service</span> <span class="o">=</span> <span class="n">v1</span><span class="o">.</span><span class="n">read_namespaced_service</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">namespace</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">service</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">load_balancer</span><span class="o">.</span><span class="n">ingress</span><span class="p">:</span>
+                <span class="n">external_ip</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">load_balancer</span><span class="o">.</span><span class="n">ingress</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ip</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2">:: Found IP </span><span class="si">{</span><span class="n">external_ip</span><span class="si">}</span><span class="s2"> for service </span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">external_ip</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2">:: No ingress IP found for service </span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2">. Retrying in </span><span class="si">{</span><span class="n">sleep_time</span><span class="si">}</span><span class="s2"> seconds...&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2">:: Failed to get service </span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2">. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_time</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get LoadBalancer IP for service </span><span class="si">{</span><span class="n">service_name</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2"> attempts.&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="render_manifest_from_template">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.render_manifest_from_template">[docs]</a>
+<span class="k">def</span> <span class="nf">render_manifest_from_template</span><span class="p">(</span><span class="n">template_file</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">apps_string</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Renders a Kubernetes manifest from a template by replacing placeholders with actual values.</span>
+
+<span class="sd">    :param template_file: The path to the template file.</span>
+<span class="sd">    :param output_path: The path where the rendered manifest will be saved.</span>
+<span class="sd">    :param apps_string: A comma-separated string of app details in the format &#39;app_name:app_port:ip_address&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">replace_values</span><span class="p">(</span><span class="n">template_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">app_port</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replaces placeholders in the template file with actual values and writes to the output file.</span>
+
+<span class="sd">        :param template_file: The path to the template file.</span>
+<span class="sd">        :param output_file: The path to the output file.</span>
+<span class="sd">        :param app_name: The application name to replace in the template.</span>
+<span class="sd">        :param app_port: The application port to replace in the template.</span>
+<span class="sd">        :param ip_address: The IP address to replace in the template.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">template_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{{ APP_NAME }}&quot;</span><span class="p">,</span> <span class="n">app_name</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{{ APP_PORT }}&quot;</span><span class="p">,</span> <span class="n">app_port</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{{ HOSTNAME }}&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;HOST_NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{{ PARTICIPANT_ID }}&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;INSTRUQT_PARTICIPANT_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;{{ IP_ADDRESS }}&quot;</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="n">apps</span> <span class="o">=</span> <span class="n">apps_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">app</span> <span class="ow">in</span> <span class="n">apps</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rendering template for </span><span class="si">{</span><span class="n">app</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">app_name</span><span class="p">,</span> <span class="n">app_port</span><span class="p">,</span> <span class="n">ip_address</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;nginx-</span><span class="si">{</span><span class="n">app_name</span><span class="si">}</span><span class="s2">.yaml&quot;</span><span class="p">)</span>
+        <span class="n">replace_values</span><span class="p">(</span><span class="n">template_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">app_name</span><span class="p">,</span> <span class="n">app_port</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="apply_k8s_manifests">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.apply_k8s_manifests">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_k8s_manifests</span><span class="p">(</span><span class="n">manifests</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply Kubernetes manifests.</span>
+
+<span class="sd">    :param manifests: The path to the manifests file(s).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">manifest</span> <span class="ow">in</span> <span class="n">manifests</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">manifest</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">manifest_content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">document</span> <span class="ow">in</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load_all</span><span class="p">(</span><span class="n">manifest_content</span><span class="p">):</span>
+                <span class="n">k8s_client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiClient</span><span class="p">()</span>
+                <span class="n">k8s_client</span><span class="o">.</span><span class="n">create_from_dict</span><span class="p">(</span><span class="n">document</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="wait_for_kubernetes_api">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.wait_for_kubernetes_api">[docs]</a>
+<span class="k">def</span> <span class="nf">wait_for_kubernetes_api</span><span class="p">(</span><span class="n">k8s_api</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enables bash completion for kubectl.</span>
+<span class="sd">    Waits for the Kubernetes API server to become available.</span>
+
+<span class="sd">    :param k8s_api: The URL of the Kubernetes API server. (e.g., &#39;http://localhost:8001/api&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">run_command</span><span class="p">(</span><span class="s1">&#39;echo &quot;source /usr/share/bash-completion/bash_completion&quot; &gt;&gt; /root/.bashrc&#39;</span><span class="p">)</span>
+    <span class="n">run_command</span><span class="p">(</span><span class="s1">&#39;echo &quot;complete -F __start_kubectl k&quot; &gt;&gt; /root/.bashrc&#39;</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k8s_api</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Kubernetes API server is available.&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Waiting for the Kubernetes API server to become available...&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_k8s_secret">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.create_k8s_secret">[docs]</a>
+<span class="k">def</span> <span class="nf">create_k8s_secret</span><span class="p">(</span><span class="n">secret_name</span><span class="p">,</span> <span class="n">secret_data</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create Kubernetes secret.</span>
+
+<span class="sd">    :param secret_name: The name of the Kubernetes secret to create.</span>
+<span class="sd">    :param namespace: The namespace for the Kubernetes secret. Default is &#39;default&#39;.</span>
+<span class="sd">    :raises SystemExit: If the secret could not be created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating secret &#39;</span><span class="si">{secret_name}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">CoreV1Api</span><span class="p">()</span>
+    <span class="n">secret</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">V1Secret</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">client</span><span class="o">.</span><span class="n">V1ObjectMeta</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">secret_name</span><span class="p">),</span>
+        <span class="n">string_data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">secret_data</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">v1</span><span class="o">.</span><span class="n">create_namespaced_secret</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="n">namespace</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">client</span><span class="o">.</span><span class="n">ApiException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">409</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception when creating secret: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#### MISC FUNCTIONS ####</span>
+<div class="viewcode-block" id="setup_vs_code">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.setup_vs_code">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_vs_code</span><span class="p">(</span><span class="n">service_port</span><span class="p">,</span> <span class="n">code_server_directory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets up VS Code server by downloading, installing, and configuring it.</span>
+
+<span class="sd">    :param service_port: The port on which the VS Code server will run.</span>
+<span class="sd">    :param code_server_directory: The directory where the VS Code server will store its files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">download_and_install</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Downloads and installs VS Code server from the official repository.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/cdr/code-server/main/install.sh&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/tmp/install.sh&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="s2">&quot;/tmp/install.sh&quot;</span><span class="p">,</span> <span class="mo">0o755</span><span class="p">)</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;bash&quot;</span><span class="p">,</span> <span class="s2">&quot;/tmp/install.sh&quot;</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Check if VS Code is already installed</span>
+    <span class="k">if</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="s2">&quot;which&quot;</span><span class="p">,</span> <span class="s2">&quot;code-server&quot;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;VS Code already installed.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Installing VS Code...&quot;</span><span class="p">)</span>
+        <span class="n">download_and_install</span><span class="p">()</span>
+
+    <span class="c1"># Setup VS Code</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;/home/harness/.local/share/code-server/User/&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chown</span><span class="p">(</span>
+        <span class="s2">&quot;/home/harness/.local/share&quot;</span><span class="p">,</span>
+        <span class="n">pwd</span><span class="o">.</span><span class="n">getpwnam</span><span class="p">(</span><span class="s2">&quot;harness&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pw_uid</span><span class="p">,</span>
+        <span class="n">grp</span><span class="o">.</span><span class="n">getgrnam</span><span class="p">(</span><span class="s2">&quot;harness&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">gr_gid</span>
+    <span class="p">)</span>
+
+    <span class="n">settings_url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/vs_code/settings.json&quot;</span>
+    <span class="n">settings_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">settings_url</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/home/harness/.local/share/code-server/User/settings.json&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">settings_response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="n">service_url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/vs_code/code-server.service&quot;</span>
+    <span class="n">service_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">service_url</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/etc/systemd/system/code-server.service&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">service_response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="c1"># Update VS Code service</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;/etc/systemd/system/code-server.service&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">service_content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">service_content</span> <span class="o">=</span> <span class="n">service_content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;EXAMPLEPORT&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">service_port</span><span class="p">))</span>
+    <span class="n">service_content</span> <span class="o">=</span> <span class="n">service_content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;EXAMPLEDIRECTORY&quot;</span><span class="p">,</span> <span class="n">code_server_directory</span><span class="p">)</span>
+
+    <span class="n">create_systemd_service</span><span class="p">(</span><span class="n">service_content</span><span class="p">,</span> <span class="s2">&quot;code-server&quot;</span><span class="p">)</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;code-server&quot;</span><span class="p">,</span> <span class="s2">&quot;--install-extension&quot;</span><span class="p">,</span> <span class="s2">&quot;hashicorp.terraform&quot;</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="generate_credentials_html">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.generate_credentials_html">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_credentials_html</span><span class="p">(</span><span class="n">credentials</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetches the HTML template from a URL, populates it with credentials, and returns the generated HTML content.</span>
+
+<span class="sd">    :param credentials: List of credentials to populate the template</span>
+<span class="sd">    :return: Rendered HTML content as a string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">template_url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/jtitra/field-workshops/main/assets/misc/credential_tab_template.html&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Fetch the HTML template from the URL</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">template_url</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">html_template</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+        
+        <span class="c1"># Create a Jinja2 Template instance</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">html_template</span><span class="p">)</span>
+        
+        <span class="c1"># Render the template with the credentials data</span>
+        <span class="n">rendered_html</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">rendered_html</span>
+    
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error fetching the template: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="create_systemd_service">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.create_systemd_service">[docs]</a>
+<span class="k">def</span> <span class="nf">create_systemd_service</span><span class="p">(</span><span class="n">service_content</span><span class="p">,</span> <span class="n">service_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a systemd service file and enables it to start on boot.</span>
+
+<span class="sd">    :param service_content: The content to populate the .service file.</span>
+<span class="sd">    :param service_name: The name of the service to create.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">service_file_path</span> <span class="o">=</span> <span class="s2">&quot;/etc/systemd/system/</span><span class="si">{service_name}</span><span class="s2">.service&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">service_file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">service_file</span><span class="p">:</span>
+        <span class="n">service_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">service_content</span><span class="p">)</span>
+
+    <span class="c1"># Reload systemd and enable the service</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;systemctl&quot;</span><span class="p">,</span> <span class="s2">&quot;daemon-reload&quot;</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;systemctl&quot;</span><span class="p">,</span> <span class="s2">&quot;enable&quot;</span><span class="p">,</span> <span class="n">service_name</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;systemctl&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">service_name</span><span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="run_command">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.run_command">[docs]</a>
+<span class="k">def</span> <span class="nf">run_command</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runs a shell command and prints success or failure message.</span>
+
+<span class="sd">    :param command: The command to run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Command &#39;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&#39; executed successfully.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to execute command &#39;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&#39;. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="generate_random_suffix">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.generate_random_suffix">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_random_suffix</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a random suffix by hashing a random number and taking the first 10 characters.</span>
+
+<span class="sd">    :return: A random suffix string of 10 characters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">random_number</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">32767</span><span class="p">)</span>
+    <span class="n">md5_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">random_number</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+    <span class="n">random_suffix</span> <span class="o">=</span> <span class="n">md5_hash</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">random_suffix</span></div>
+
+
+
+<div class="viewcode-block" id="get_gke_credentials">
+<a class="viewcode-back" href="../pyharnessinstruqt.html#pyharnessinstruqt.get_gke_credentials">[docs]</a>
+<span class="k">def</span> <span class="nf">get_gke_credentials</span><span class="p">(</span><span class="n">generator_uri</span><span class="p">,</span> <span class="n">user_name</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get GKE cluster credentials and output to file.</span>
+
+<span class="sd">    :param generator_uri: The URL of the GKE Generator API server.</span>
+<span class="sd">    :param user_name: The user to generate an env/namespace for.</span>
+<span class="sd">    :param output_file: The file to create for the new kubeconfig yaml.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Getting GKE cluster credentials...&quot;</span><span class="p">)</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">user_name</span><span class="p">})</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">generator_uri</span><span class="si">}</span><span class="s2">/create-user&quot;</span><span class="p">,</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+        <span class="n">stream</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTTP status code: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Joe Titra.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
