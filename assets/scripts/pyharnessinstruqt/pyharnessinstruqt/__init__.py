@@ -638,6 +638,7 @@ def set_agent_variable(variable_name, variable_value):
     Sets the value of a specified variable using the 'agent variable set' command.
 
     :param variable_name: The name of the variable to set.
+    :param variable_value: The value of the variable to set.
     """
     try:
         subprocess.run(["agent", "variable", "set", variable_name, variable_value], check=True, stdout=subprocess.PIPE, text=True)
