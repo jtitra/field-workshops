@@ -640,7 +640,7 @@ def set_agent_variable(variable_name, variable_value):
     :param variable_name: The name of the variable to set.
     """
     try:
-        subprocess.run(["agent", "variable", "set", variable_name], check=True, stdout=subprocess.PIPE, text=True)
+        subprocess.run(["agent", "variable", "set", variable_name, variable_value], check=True, stdout=subprocess.PIPE, text=True)
     except subprocess.CalledProcessError as e:
         print(f"Error setting {variable_name}: {e}")
 
