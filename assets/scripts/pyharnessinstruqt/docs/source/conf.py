@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath('../..'))
 project = 'pyharnessinstruqt'
 copyright = '2024, Joe Titra'
 author = 'Joe Titra'
-release = '0.1.2'
+release = '0.1.3'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

@@ -927,9 +927,9 @@ def generate_random_suffix():
     return random_suffix
 
 
-def get_gke_credentials(generator_uri, user_name, output_file):
+def generate_gke_credentials(generator_uri, user_name, output_file):
     """
-    Get GKE cluster credentials and output to file.
+    Generate GKE cluster credentials and output to file.
 
     :param generator_uri: The URL of the GKE Generator API server.
     :param user_name: The user to generate an env/namespace for.
@@ -945,4 +945,22 @@ def get_gke_credentials(generator_uri, user_name, output_file):
     )
     with open(output_file, "wb") as f:
         f.write(response.content)
+    print(f"HTTP status code: {response.status_code}")
+
+
+def revoke_gke_credentials(generator_uri, user_name):
+    """
+    Revoke GKE cluster credentials.
+
+    :param generator_uri: The URL of the GKE Generator API server.
+    :param user_name: The user to revoke an env/namespace for.
+    """
+    print("Revoking GKE cluster credentials...")
+    payload = json.dumps({"username": user_name})
+    response = requests.post(
+        f"{generator_uri}/delete-user",
+        headers={"Content-Type": "application/json"},
+        data=payload,
+        stream=True
+    )
     print(f"HTTP status code: {response.status_code}")
