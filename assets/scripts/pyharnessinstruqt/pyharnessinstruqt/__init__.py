@@ -303,13 +303,14 @@ def create_harness_pipeline(api_key, account_id, org_id, project_id, pipeline_ya
     }
 
     validate_yaml_content(pipeline_yaml)
-    response = requests.post(url, headers=headers, json=pipeline_yaml, stream=True)
+    response = requests.post(url, headers=headers, data=pipeline_yaml, stream=True)
     response_code = response.status_code
 
     if 200 <= response_code < 300:
         print("  INFO: Successfully created Harness pipeline.")
     else:
         print(f"  ERROR: Request failed. Status Code: {response_code}")
+        print(f"  Response Content: {response.content.decode('utf-8')}")
 
 
 #### HARNESS HCE FUNCTIONS ####
