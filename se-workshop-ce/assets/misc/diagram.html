@@ -86,12 +86,16 @@
   <body>
     <div class="main">
       <div id="myBtnContainer">
-        <button class="btn active" onclick="filterSelection('delegate')"> Delegate Architecture </button>
-        <button class="btn" onclick="filterSelection('arch')"> HCE Architecture </button>
+        <button class="btn hidden" onclick="filterSelection('delegate')"> Delegate Architecture </button>
+        <button class="btn hidden" onclick="filterSelection('arch')"> HCE Architecture </button>
         <button class="btn hidden" onclick="filterSelection('flow')"> HCE Experiment Flow </button>
-        <button class="btn" onclick="filterSelection('microserv')"> Demo App Architecture </button>
+        <button class="btn active" onclick="filterSelection('microserv')"> Demo App Architecture </button>
         <button class="btn" onclick="filterSelection('delete')"> Pod Delete </button>
         <button class="btn" onclick="filterSelection('cpu')"> CPU Hog </button>
+        <button class="btn hidden" onclick="filterSelection('memory')"> Memory Hog </button>
+        <button class="btn hidden" onclick="filterSelection('node')"> Node Restart </button>
+        <button class="btn hidden" onclick="filterSelection('kubelet')"> Kubelet Density </button>
+        <button class="btn hidden" onclick="filterSelection('az')"> AZ Down </button>
       </div>
       <div class="row">
         <div class="column delegate">
@@ -165,7 +169,7 @@
       </div>
     </div>
     <script>
-      filterSelection('delegate')
+      filterSelection('microserv')
       function filterSelection(c) {
         var x, i;
         x = document.getElementsByClassName("column");
