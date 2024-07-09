@@ -14,6 +14,7 @@ import json
 import random
 import hashlib
 from kubernetes import client, utils
+import yaml
 
 #### GLOBAL VARIABLES ####
 HARNESS_API = "https://app.harness.io"
@@ -27,6 +28,7 @@ def verify_harness_login(api_key, account_id, user_name):
     :param api_key: The API key for accessing Harness API.
     :param account_id: The account ID in Harness.
     :param user_name: The user name to verify the login for.
+    :return: True if the user has logged in, otherwise False.
     """
     time_filter = int(time.time() * 1000) - 300000  # Current time in milliseconds minus 5 minutes
 
@@ -52,11 +54,10 @@ def verify_harness_login(api_key, account_id, user_name):
 
     if response_items >= 1:
         print("Successful login found in audit trail.")
+        return True
     else:
         print("No Logins were found in the last 5 minutes")
-        subprocess.run(
-            ["fail-message", "No Login events were found for your user via the Harness API."],
-            check=True)
+        return False
 
 
 def create_harness_project(api_key, account_id, org_id, project_name):
@@ -269,17 +270,44 @@ def create_harness_delegate(api_key, account_id, org_id, project_id):
     response = requests.post(url, headers=headers, json=payload, stream=True)
     response_code = response.status_code
 
-    with open('instruqt-delegate.yaml', 'wb') as f:
+    with open("instruqt-delegate.yaml", "wb") as file:
         for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
+            file.write(chunk)
 
     if 200 <= response_code < 300:
+        with open("instruqt-delegate.yaml", 'r') as file:
+            validate_yaml_content(file)
+
         try:
-            subprocess.run(['yq', 'eval', 'instruqt-delegate.yaml'], check=True)
-            print("  INFO: Valid YAML file received. Applying it.")
-            subprocess.run(['kubectl', 'apply', '-f', 'instruqt-delegate.yaml'], check=True)
+            subprocess.run(["kubectl", "apply", "-f", "instruqt-delegate.yaml"], check=True)
         except subprocess.CalledProcessError:
-            print("  ERROR: The file is not a valid YAML.")
+            print("  ERROR: Failed to apply the provided YAML.")
+    else:
+        print(f"  ERROR: Request failed. Status Code: {response_code}")
+
+
+def create_harness_pipeline(api_key, account_id, org_id, project_id, pipeline_yaml):
+    """
+    Creates a pipeline in the provided Harness project.
+
+    :param api_key: The API key for accessing Harness API.
+    :param account_id: The account ID in Harness.
+    :param org_id: The organization ID in Harness.
+    :param project_id: The project ID in Harness.
+    :param pipeline_yaml: The Harness pipeline YAML payload.
+    """
+    url = f"{HARNESS_API}/pipeline/api/pipelines/v2?accountIdentifier={account_id}&orgIdentifier={org_id}&projectIdentifier={project_id}"
+    headers = {
+        "Content-Type": "application/yaml",
+        "x-api-key": api_key
+    }
+
+    validate_yaml_content(pipeline_yaml)
+    response = requests.post(url, headers=headers, json=pipeline_yaml, stream=True)
+    response_code = response.status_code
+
+    if 200 <= response_code < 300:
+        print("  INFO: Successfully created Harness pipeline.")
     else:
         print(f"  ERROR: Request failed. Status Code: {response_code}")
 
@@ -306,21 +334,49 @@ def supported_api_methods(request_type):
     match request_type:
         case "register_infra":
             return {
-                "mutation": "registerInfra",
-                "request": "RegisterInfraRequest",
-                "return": "manifest"
+                "operation": "mutation",
+                "type": "registerInfra",
+                "param": {
+                    "key": "request",
+                    "value": "RegisterInfraRequest!"
+                },
+                "return": "{ manifest }"
             }
         case "add_probe":
             return {
-                "mutation": "addProbe",
-                "request": "ProbeRequest",
-                "return": "name type"
+                "operation": "mutation",
+                "type": "addProbe",
+                "param": {
+                    "key": "request",
+                    "value": "ProbeRequest!"
+                },
+                "return": "{ name type }"
+            }
+        case "list_infra":
+            return {
+                "operation": "query",
+                "type": "listInfrasV2",
+                "param": {
+                    "key": "request",
+                    "value": "ListInfraRequest"
+                },
+                "return": "{ totalNoOfInfras infras {infraID name environmentID platformName infraNamespace serviceAccount infraScope installationType} }"
+            }
+        case "get_infra_manifest":
+            return {
+                "operation": "query",
+                "type": "getInfraManifest",
+                "param": {
+                    "key": "infraID",
+                    "value": "String!"
+                },
+                "return": ""
             }
         case _:
             raise ValueError(f"Unsupported request type: {request_type}")
 
 
-def make_api_call(api_key, account_id, org_id, project_id, query_type, request_variables):
+def make_api_call(api_key, account_id, org_id, project_id, query_type, request_variables=None):
     """
     Makes an API call to the Chaos API with the specified query type and variables.
 
@@ -333,6 +389,9 @@ def make_api_call(api_key, account_id, org_id, project_id, query_type, request_v
     :return: The response from the Chaos API as a JSON object
     :raises SystemError: If an HTTP error or other error occurs during the API call
     """
+    if request_variables is None:
+        request_variables = {}
+
     query_data = supported_api_methods(query_type)
     chaos_uri = f"{HARNESS_API}/gateway/chaos/manager/api/query"
     headers = {
@@ -341,15 +400,13 @@ def make_api_call(api_key, account_id, org_id, project_id, query_type, request_v
     }
 
     query = f"""
-    mutation {query_data['mutation']}($request: {query_data['request']}!, $identifiers: IdentifiersRequest!) {{
-        {query_data['mutation']}(request: $request, identifiers: $identifiers) {{
-            {query_data['return']}
-        }}
+    {query_data['operation']} {query_data['type']}(${query_data['param']['key']}: {query_data['param']['value']}, $identifiers: IdentifiersRequest!) {{
+        {query_data['type']}({query_data['param']['key']}: ${query_data['param']['key']}, identifiers: $identifiers) {query_data['return']}
     }}
     """
 
     variables = {
-        "request": request_variables,
+        f"{query_data['param']['key']}": request_variables,
         "identifiers": {
             "accountIdentifier": account_id,
             "orgIdentifier": org_id,
@@ -407,7 +464,7 @@ def register_infra(api_key, account_id, org_id, project_id, name, env_id, proper
     request_variables["name"] = name
     request_variables["environmentID"] = env_id
 
-    response = make_api_call(api_key, "register_infra", request_variables, account_id, org_id, project_id)
+    response = make_api_call(api_key, account_id, org_id, project_id, "register_infra", request_variables)
 
     # Extract the YAML manifest from the response
     manifest_yaml = response["data"]["registerInfra"]["manifest"]
@@ -466,7 +523,37 @@ def add_probe(api_key, account_id, org_id, project_id, name, properties=None):
         "kubernetesHTTPProperties": kubernetes_http_properties
     }
     
-    return make_api_call(api_key, "add_probe", request_variables, account_id, org_id, project_id)
+    return make_api_call(api_key, account_id, org_id, project_id, "add_probe", request_variables)
+
+
+def get_manifest_for_infra(api_key, account_id, org_id, project_id, name):
+    """
+    Creates a manifest file for the chaos infrastructure specified using the Chaos API.
+
+    :param api_key: The access token for authentication
+    :param account_id: The account identifier
+    :param org_id: The organization identifier
+    :param project_id: The project identifier
+    :param name: The name of the chaos infrastructure
+    """
+    infra_id = None
+    yaml_file = f"{name}-harness-chaos-enable.yml"
+    chaos_infra = make_api_call(api_key, account_id, org_id, project_id, "list_infra")
+
+    for infra in chaos_infra["data"]["listInfrasV2"]["infras"]:
+        if infra["name"] == name:
+            infra_id = infra["infraID"]
+            break
+
+    if infra_id:
+        print(f"InfraID for '{name}': {infra_id}")
+        chaos_manifest_raw = make_api_call(api_key, account_id, org_id, project_id, "get_infra_manifest", infra_id)
+        with open(yaml_file, "wb") as file:
+            file.write(chaos_manifest_raw["data"]["getInfraManifest"].encode('utf-8'))
+        with open(yaml_file, "r") as file:
+            validate_yaml_content(file)
+    else:
+        print(f"No infrastructure found with the name '{name}'")
 
 
 #### KEYCLOAK FUNCTIONS ####
@@ -643,6 +730,15 @@ def set_agent_variable(variable_name, variable_value):
         subprocess.run(["agent", "variable", "set", variable_name, variable_value], check=True, stdout=subprocess.PIPE, text=True)
     except subprocess.CalledProcessError as e:
         print(f"Error setting {variable_name}: {e}")
+
+
+def raise_lab_failure_message(message_text):
+    """
+    Presents the user with a failure message after they've clicked the 'Check' button.
+
+    :param message_text: The error/failure message to display to the workshop user.
+    """
+    subprocess.run(["fail-message", message_text], check=True)
 
 
 #### K8S FUNCTIONS ####
@@ -964,3 +1060,18 @@ def revoke_gke_credentials(generator_uri, user_name):
         stream=True
     )
     print(f"HTTP status code: {response.status_code}")
+
+
+def validate_yaml_content(yaml_content):
+    """
+    Validates provided YAML data.
+
+    :param yaml_content: The YAML data to validate.
+    """
+    try:
+        yaml_data = list(yaml.safe_load_all(yaml_content))
+        print("  INFO: Valid YAML provided.")
+        return yaml_data
+    except yaml.YAMLError as exc:
+        print("  ERROR: The provided YAML is not valid.", exc)
+        return None
