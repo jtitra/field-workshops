@@ -211,7 +211,7 @@ def get_harness_user_id(api_key, account_id, search_term):
         response.raise_for_status()  # Raises HTTPError for bad responses
         response_data = response.json()
         user_id = response_data.get('data', {}).get('content', [{}])[0].get('user', {}).get('uuid')
-    except (requests.RequestException, ValueError, KeyError) as e:
+    except (requests.RequestException, ValueError, KeyError, IndexError) as e:
         print(f"Error occurred: {e}")
         user_id = None
 
