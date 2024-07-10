@@ -206,9 +206,14 @@ def get_harness_user_id(api_key, account_id, search_term):
         "x-api-key": api_key
     }
 
-    response = requests.post(url, headers=headers)
-    response_data = response.json()
-    user_id = response_data.get('data', {}).get('content', [{}])[0].get('user', {}).get('uuid')
+    try:
+        response = requests.post(url, headers=headers)
+        response.raise_for_status()  # Raises HTTPError for bad responses
+        response_data = response.json()
+        user_id = response_data.get('data', {}).get('content', [{}])[0].get('user', {}).get('uuid')
+    except (requests.RequestException, ValueError, KeyError) as e:
+        print(f"Error occurred: {e}")
+        user_id = None
 
     print(f"Harness User ID: {user_id}")
     return user_id
@@ -224,8 +229,8 @@ def delete_harness_user(api_key, account_id, user_email, cleanup=False):
     :param cleanup: Flag to continue the cleanup process on failure.
     """
     user_id = get_harness_user_id(api_key, account_id, user_email)
-    if user_id == "null":
-        print("Failed to determine the User ID.")
+    if user_id is None:
+        print("Failed to determine the User ID. They may not have logged in. Nothing to delete.")
     else:
         print(f"Deleting Harness User ID: {user_id}")
         url = f"{HARNESS_API}/gateway/ng/api/user/{user_id}?accountIdentifier={account_id}"
