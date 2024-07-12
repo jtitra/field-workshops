@@ -2,7 +2,7 @@
 
 # Standard library imports
 import os
-import pyharnessinstruqt
+from pyharnessworkshop import harness, keycloak, utils 
 
 ####################### ADD ANY WORKSHOP SPECIFIC CLEANUP AT THE VERY BOTTOM #######################
 GENERATOR_URI = os.getenv("SE_WORKSHOP_GKE_GENERATOR")
@@ -11,9 +11,9 @@ GENERATOR_URI = os.getenv("SE_WORKSHOP_GKE_GENERATOR")
 HARNESS_ACCOUNT_ID = os.getenv("SE_WORKSHOP_ACCOUNT_ID")
 HARNESS_ORG_ID = os.getenv("SE_WORKSHOP_ORG_ID")
 HARNESS_PAT = os.getenv("SE_WORKSHOP_PAT")
-HARNESS_PROJECT = pyharnessinstruqt.get_agent_variable("HARNESS_PRJ_ID")
-HARNESS_PROJECT_CREATED = pyharnessinstruqt.get_agent_variable("HARNESS_PRJ_CREATED")
-USER_EMAIL = pyharnessinstruqt.get_agent_variable("HARNESS_USER")
+HARNESS_PROJECT = utils.instruqt.get_agent_variable("HARNESS_PRJ_ID")
+HARNESS_PROJECT_CREATED = utils.instruqt.get_agent_variable("HARNESS_PRJ_CREATED")
+USER_EMAIL = utils.instruqt.get_agent_variable("HARNESS_USER")
 USER_EMAIL_CLEAN = USER_EMAIL.replace("@", "%40")
 KEYCLOAK_ENDPOINT = os.getenv("SE_WORKSHOP_KEYCLOAK_ENDPOINT")
 KEYCLOAK_REALM = os.getenv("SE_WORKSHOP_KEYCLOAK_REALM")
@@ -21,17 +21,17 @@ KEYCLOAK_ADMIN_USER = os.getenv("SE_WORKSHOP_KEYCLOAK_ADMIN_USER")
 KEYCLOAK_ADMIN_PWD = os.getenv("SE_WORKSHOP_KEYCLOAK_ADMIN_PWD")
 
 # Generate Keycloak Bearer Token
-KEYCLOAK_TOKEN = pyharnessinstruqt.generate_keycloak_token(KEYCLOAK_ENDPOINT, KEYCLOAK_ADMIN_USER, KEYCLOAK_ADMIN_PWD, cleanup=True)
+KEYCLOAK_TOKEN = keycloak.auth.generate_keycloak_token(KEYCLOAK_ENDPOINT, KEYCLOAK_ADMIN_USER, KEYCLOAK_ADMIN_PWD, cleanup=True)
 # Create workshop user in Keycloak Realm
-pyharnessinstruqt.delete_keycloak_user(KEYCLOAK_ENDPOINT, KEYCLOAK_REALM, KEYCLOAK_TOKEN, USER_EMAIL_CLEAN, cleanup=True)
+keycloak.user.delete_keycloak_user(KEYCLOAK_ENDPOINT, KEYCLOAK_REALM, KEYCLOAK_TOKEN, USER_EMAIL_CLEAN, cleanup=True)
 
 print(f"HARNESS_PROJECT_CREATED: {HARNESS_PROJECT_CREATED}")
 if HARNESS_PROJECT_CREATED:
     print(f"Cleaning up Project: {HARNESS_PROJECT}")
     # Delete the workshop user from Harness Project
-    pyharnessinstruqt.delete_harness_user(HARNESS_PAT, HARNESS_ACCOUNT_ID, USER_EMAIL_CLEAN, cleanup=True)
+    harness.platform.delete_harness_user(HARNESS_PAT, HARNESS_ACCOUNT_ID, USER_EMAIL_CLEAN, cleanup=True)
     # Delete the Users Sandbox Project in Harness
-    pyharnessinstruqt.delete_harness_project(HARNESS_PAT, HARNESS_ACCOUNT_ID, HARNESS_ORG_ID, HARNESS_PROJECT, cleanup=True)
+    harness.platform.delete_harness_project(HARNESS_PAT, HARNESS_ACCOUNT_ID, HARNESS_ORG_ID, HARNESS_PROJECT, cleanup=True)
 else:
     print("Project does not appear to have been created. Skipping...")
 
@@ -39,8 +39,8 @@ else:
 
 ############################# ADD ANY WORKSHOP SPECIFIC SETUP BELOW ##############################
 print("Cleaning up HCE resources...")
-pyharnessinstruqt.run_command(f"kubectl delete chaosexperiment,chaosengine,chaosresult --all --namespace {HARNESS_PROJECT}")
-pyharnessinstruqt.run_command(f"kubectl delete workflows,cronworkflows --all --namespace {HARNESS_PROJECT}")
+utils.misc.run_command(f"kubectl delete chaosexperiment,chaosengine,chaosresult --all --namespace {HARNESS_PROJECT}")
+utils.misc.run_command(f"kubectl delete workflows,cronworkflows --all --namespace {HARNESS_PROJECT}")
 
 print("Cleaning up GKE cluster credentials...")
-pyharnessinstruqt.revoke_gke_credentials(GENERATOR_URI, HARNESS_PROJECT) 
+utils.misc.revoke_gke_credentials(GENERATOR_URI, HARNESS_PROJECT) 

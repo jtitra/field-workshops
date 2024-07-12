@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 import os
-import pyharnessinstruqt
+from pyharnessworkshop import utils
 
 # REQUIRED VARIABLES LIST
 OUTPUT_HTML = "/opt/harness/misc/credential_tab.html"
-USER_EMAIL = pyharnessinstruqt.get_agent_variable("HARNESS_USER")
+USER_EMAIL = utils.instruqt.get_agent_variable("HARNESS_USER")
 USER_PWD = os.getenv("SE_WORKSHOP_USER_PWD")
 GRAFANA_PW = os.getenv("SE_WORKSHOP_GRAFANA_PW")
 CREDENTIALS = [
@@ -28,7 +28,7 @@ CREDENTIALS = [
 ]
 
 # Render HTML
-generated_html = pyharnessinstruqt.generate_credentials_html(CREDENTIALS)
+generated_html = utils.misc.generate_credentials_html(CREDENTIALS)
 
 # Check if the HTML was generated successfully
 if generated_html:
@@ -54,4 +54,4 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 """
-pyharnessinstruqt.create_systemd_service(service_content, "lab_credentials")
+utils.misc.create_systemd_service(service_content, "lab_credentials")
