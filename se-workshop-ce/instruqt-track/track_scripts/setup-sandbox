@@ -119,7 +119,7 @@ utils.instruqt.set_agent_variable("HARNESS_BOUTIQUE_URL", f"http://{boutique_ip}
 # Setup nginx to redirect instruqt tabs
 config.load_kube_config(context="default")
 print("Deploying nginx on sandbox k3s...")
-assignment_service_tabs = f"boutique:30001:{boutique_ip},grafana:30002:{grafana_ip}/d/edruqxvqvulmoa/boutique-app-dashboard"
+assignment_service_tabs = f"boutique:30001:{boutique_ip},grafana:30002:{grafana_ip}"
 utils.k8s.render_manifest_from_template(f"{manifest_path}/nginx.yaml.template", manifest_path, assignment_service_tabs)
 utils.k8s.apply_k8s_manifests([
     f"{manifest_path}/nginx-boutique.yaml",

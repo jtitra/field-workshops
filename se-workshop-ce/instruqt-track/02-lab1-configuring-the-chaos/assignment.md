@@ -7,8 +7,9 @@ teaser: Setting up your Harness Chaos Environment
 notes:
 - type: text
   contents: |
-    <br>Chaos engineering is the continuous process of proactively introducing disruptions to systems to assess and improve their resilience against real-world outages.
-    <br>In this first lab you will setup the Chaos Environment that you will use for fault injection in subsequent labs.
+    - Chaos engineering is the continuous process of proactively introducing disruptions to systems to assess and improve their resilience against real-world outages.
+    - In this first lab you will setup the Chaos Environment that you will use for fault injection in subsequent labs.
+
     ![Chaos Engineering](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/chaos-eng-steps.png)
 tabs:
 - title: Harness Platform
@@ -36,7 +37,7 @@ h2.cyan { color: cyan; }
 > # Switch to the ```Architecture``` tab to continue
 
 This is the demo app that we will leverage for fault injection in a later lab. Each box represents an individual microservice. <br>
-- *What do you think will happen if we target the cart service for fault injection?*
+- *What do you think will happen if we target the `cart service` for fault injection?*
 
 <br>
 

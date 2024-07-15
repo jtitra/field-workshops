@@ -18,10 +18,8 @@ tabs:
   path: /
   port: 30001
 - title: Grafana
-  type: service
-  hostname: sandbox
-  path: /
-  port: 30002
+  type: website
+  url: https://sandbox-30002-${_SANDBOX_ID}.env.play.instruqt.com/d/edruqxvqvulmoa/boutique-app-dashboard
 - title: Architecture
   type: website
   url: https://htmlpreview.github.io/?https://raw.githubusercontent.com/jtitra/field-workshops/blob/main/se-workshop-ce/assets/misc/diagram.html
