@@ -72,8 +72,10 @@ Navigate to **Kubernetes** faults and select `Pod Delete`
 >     - Select `frontend-availability-check`
 >     - Click `Add to Fault`
 >     - Select `OnChaos`
->     - Click `Apply Changes`
-> Click **Apply Changes**
+>     - Click `Apply Changes` <br>
+
+Click **Apply Changes**
+![ce_experiment_apply_changes.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_experiment_apply_changes.png) <br>
 
 Click **Save** <br>
 ![ce_save.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_save.png) <br>

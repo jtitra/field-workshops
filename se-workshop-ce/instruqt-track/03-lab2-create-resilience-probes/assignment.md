@@ -41,17 +41,17 @@ and probe **HTTP** <br>
 > **HTTP Probe**
 > - **Overview**
 >   - Name: ```frontend-availability-check```
-> - **Properties**
->   - Timeout: ```10s```
->   - Interval: ```2s```
->   - Attempt: ```5```
->   - Polling Interval: ```2s```
 > - **Probe Details**
 >   - URL: ```[[ Instruqt-Var key="HARNESS_BOUTIQUE_URL" hostname="sandbox" ]]```
 >   - Method: ```GET```
 >     - ```Compare Response Code```
 >   - Criteria: ```==```
 >   - Method: ```200```
+> - **Properties**
+>   - Timeout: ```10s```
+>   - Interval: ```2s```
+>   - Attempt: ```5```
+>   - Polling Interval: ```2s```
 
 Click **Setup Probe >** <br>
 

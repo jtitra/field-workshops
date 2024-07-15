@@ -40,12 +40,13 @@ And then click ```+New Condition``` <br>
 > - WHAT
 >   - FAULT: `pod-delete`
 > - WHERE
->   - `*`
+>   - `*`  *Reference Image Below*
 > - WHICH
 >   - NAMESPACE: `*`
 >   - APP LABEL: `app=cartservice`
 > - USING
 >   - `*`
+> ![ce_chaosguard_select_infra.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_chaosguard_select_infra.png) <br>
 
 Or you can switch to the `YAML` tab and paste this condition.
 ```
@@ -82,7 +83,7 @@ And then click ```+New Rule``` <br>
 > - **Overview**
 >   - Name: ```block-pod-delete-during-business-hours```
 >   - User group(s): *Reference Image Below*
->   - Time window
+>   - Time window: *Not required to update*
 >     - Timezone: ```America/New_York```
 >     - Start Time: ```today at 7am```
 >     - End Time: ```12h``` from start time

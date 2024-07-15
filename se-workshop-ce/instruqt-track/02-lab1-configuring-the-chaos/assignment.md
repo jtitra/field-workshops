@@ -2,7 +2,7 @@
 slug: lab1-configuring-the-chaos
 id: x8cfeuiglibv
 type: challenge
-title: Lab 1 - Configuring the Chaos
+title: Lab 1 - Configuring the Chaos Infrastructure
 teaser: Setting up your Harness Chaos Environment
 notes:
 - type: text
@@ -29,7 +29,7 @@ timelimit: 1600
 <style type="text/css" rel="stylesheet">
 hr.cyan { background-color: cyan; color: cyan; height: 2px; margin-bottom: -10px; }
 h2.cyan { color: cyan; }
-</style><h2 class="cyan">Configuring the Chaos</h2>
+</style><h2 class="cyan">Configuring the Chaos Infrastructure</h2>
 <hr class="cyan">
 <br><br>
 

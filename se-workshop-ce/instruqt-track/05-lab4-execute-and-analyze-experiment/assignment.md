@@ -43,20 +43,25 @@ h2.cyan { color: cyan; }
 
 > # Switch to the ```Boutique App``` tab to continue
 
-This is our demo app we will use for our Chaos Experiments. Feel free to browse around, add to cart, and see that everything is working as expected.
+This is our demo app we will use for our Chaos Experiments. <br>
+Feel free to *browse* around, *add to cart*, *checkout* and see that everything is working as expected.
 
 
 > # Switch to the ```Grafana``` tab to continue
+*All credentials for this lab can always be found on the: <br>
+ `Lab Credentials` tab* <br>
 
 |   |   |
 |---|---|
 |__User__| ```admin``` |
 |__Password__| ```[[ Instruqt-Var key="GRAFANA_PWD" hostname="sandbox" ]]``` |
 
-Click on ![ce_grafana_dashboards.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_grafana_dashboards.png) <br>
-Select ![ce_grafana_boutique_app_dashboard.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_grafana_boutique_app_dashboard.png) <br>
-You can click on this icon to minimize the left nav. <br>
-![ce_grafana_undock_menu.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_grafana_undock_menu.png) <br>
+Let's open the `Boutique App Dashboard` <br>
+
+- Click on: ![ce_grafana_dashboards.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_grafana_dashboards.png)
+- Select: ![ce_grafana_boutique_app_dashboard.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_grafana_boutique_app_dashboard.png)
+- Minimize the left nav: ![ce_grafana_undock_menu.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_grafana_undock_menu.png)
+<br>
 We will use this dashboard to get a better understanding of how our chaos experiment impacts the Online Boutique. <br>
 
 > # Switch to the ```Harness Platform``` tab to continue
@@ -80,11 +85,8 @@ Let's take a look at the results of our experiment. <br>
 > ![ce_experiment_probe_frontend.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_experiment_probe_frontend.png)
 > We can see that the frontend availability probe failed, which means that our entire site was unavailable during our fault injection targeted at the cart service. This is likely unexpected and undesired behavior. <br>
 
-> ![ce_experiment_probe_healthcheck.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_experiment_probe_healthcheck.png)
-> On a positive note, our healthcheck passed which means that once fault injection was removed our app returned to a healthy state. <br>
-
 The result of these probes, as well as the fault weightage (configured on the `Tune Fault` tab for each fault in the experiment) are used to calculate the experiments `Resililence Score`. <br>
-![ce_experiment_result_resilience_score.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_experiment_result_resilience_score.png) <br>
+![ce_experiment_result_resilience_score.png](https://raw.githubusercontent.com/jtitra/field-workshops/main/se-workshop-ce/assets/images/ce_experiment_result_resilience_score_0.png) <br>
 
 ===============
 
