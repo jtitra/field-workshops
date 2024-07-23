@@ -53,7 +53,7 @@ resource "harness_platform_connector_prometheus" "prometheus" {
   org_id             = var.org_id
   project_id         = var.project_id
   description        = "prometheus metrics"
-  url                = "http://prometheus.monitoring.svc.cluster.local:9393/"
+  url                = "http://prometheus-k8s.monitoring.svc.cluster.local:9090/"
   delegate_selectors = [var.delegate_selector]
 }
 
