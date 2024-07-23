@@ -46,7 +46,7 @@ resource "harness_platform_connector_docker" "dockerhub" {
 
 }
 
-// Prometheus connectopr
+// Prometheus connector
 resource "harness_platform_connector_prometheus" "prometheus" {
   identifier         = "prometheus"
   name               = "prometheus"
@@ -57,8 +57,16 @@ resource "harness_platform_connector_prometheus" "prometheus" {
   delegate_selectors = [var.delegate_selector]
 }
 
+// Environment
+resource "harness_platform_environment" "proj_environment" {
+  identifier = "prod"
+  name       = "prod"
+  org_id     = var.org_id
+  project_id = var.project_id
+  type       = "PreProduction"
+}
 
-// Project Infrastructure
+// Infrastructure
 resource "harness_platform_infrastructure" "proj_infra" {
   identifier      = "k8s"
   name            = "k8s"
@@ -74,7 +82,7 @@ resource "harness_platform_infrastructure" "proj_infra" {
          description: ""
          tags:
            owner: "${var.project_id}"
-         orgIdentifier: var.org_id
+         orgIdentifier: "${var.org_id}"
          projectIdentifier: "${var.project_id}"
          environmentRef: "prod"
          deploymentType: Kubernetes
@@ -87,7 +95,7 @@ resource "harness_platform_infrastructure" "proj_infra" {
   EOT
 }
 
-// Project Service
+// Service
 resource "harness_platform_service" "proj_service" {
   identifier  = "backend"
   name        = "backend"
@@ -98,7 +106,7 @@ resource "harness_platform_service" "proj_service" {
 service:
   name: backend
   identifier: backend
-  orgIdentifier: var.org_id
+  orgIdentifier: "${var.org_id}"
   projectIdentifier: "${var.project_id}"
   serviceDefinition:
     spec:
@@ -134,7 +142,7 @@ service:
   EOT
 }
 
-// Project Monitored Service
+// Monitored Service
 resource "harness_platform_monitored_service" "proj_monitored_service" {
   org_id     = var.org_id
   project_id = var.project_id
@@ -181,7 +189,7 @@ resource "harness_platform_monitored_service" "proj_monitored_service" {
   }
 }
 
-// Owasp template
+// OWASP template
 resource "harness_platform_template" "owasp_template" {
   identifier    = "owasp"
   org_id        = var.org_id
@@ -335,51 +343,3 @@ resource "harness_platform_variables" "sdk_variable" {
     fixed_value = "somekey"
   }
 }
-
-
-
-// Org level
-
-// REGO Policy
-//resource "harness_platform_policy" "policy_sto" {
-//  identifier  = "${var.workshop}secops"
-//  name        = "${var.workshop}-secops"
-//  org_id     = "${var.workshop}org"
-//  description = "SecOPS Policy"
-//  rego        = <<-REGO
-//package pipeline
-//# Deny pipelines that do not include security scanners
-//deny[msg] {
-//
-//    stage = input.pipeline.stages[i].stage
-//    stage.type == "CI"
-//    existing_steps := [ s | s = stage.spec.execution.steps[_].step.template.templateRef ] # ... and create a list of all step types in use
-//    required_template := required_templates[_]
-//
-//    not contains(existing_steps, required_template)
-//        # Show a human-friendly error message
-//        msg := sprintf("Pipeline does not contain Security Test '%s', consider adding a new step using the Template Library", [required_template])
-//}
-//
-//required_templates = ["owasp","fortify"]
-//
-//contains(arr, elem) {
-//        arr[_] = elem
-//}
-//REGO
-//}
-//
-//// Policy Set
-//resource "harness_platform_policyset" "policyset" {
-//  identifier = "${var.workshop}policyset"
-//  name       = "${var.workshop}-policyset"
-//  org_id     = "${var.workshop}org"
-//  action     = "onrun"
-//  type       = "pipeline"
-//  enabled    = true
-//    policies {
-//    identifier = "${harness_platform_policy.policy_sto.id}"
-//    severity   = "error"
-//  }
-//}
-
