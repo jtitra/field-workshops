@@ -1,8 +1,8 @@
 // Define the resources to create
 // Provisions the following into Harness: 
-//    Code Repo, Connectors for K8s, Dockerhub, and Prometheus
-//    Infrastructure, Service, Monitored Service, Project Variables
-//    Templates for OWASP, Fortify, Compile
+//    Code Repo, Connectors (K8s and Prometheus), 
+//    Infrastructure, Service, Monitored Service,
+//    Project Variables, Templates (OWASP, Fortify, Compile)
 
 // Repo
 resource "harness_platform_repo" "repo" {
@@ -27,23 +27,6 @@ resource "harness_platform_connector_kubernetes" "k8s" {
   inherit_from_delegate {
     delegate_selectors = [var.delegate_selector]
   }
-}
-
-// Dockerhub connector
-resource "harness_platform_connector_docker" "dockerhub" {
-  identifier          = "dockerhub"
-  name                = "dockerhub"
-  org_id              = var.org_id
-  project_id          = var.project_id
-  description         = "Connect to docker registry"
-  type                = "DockerHub"
-  url                 = "https://index.docker.io/v2/"
-  execute_on_delegate = false
-  credentials {
-    username     = "seworkshop"
-    password_ref = "org.docker-pw"
-  }
-
 }
 
 // Prometheus connector
